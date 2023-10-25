@@ -1,0 +1,125 @@
+{% extends "layouts/base.html" %}
+{% block title %} {{ pkg.title }} — {{ super() }}{% endblock %}
+
+{% block meta %}
+    <meta hr>
+{% endblock meta %}
+
+{% macro info_block(cond, title, var=cond) -%}
+    {% if cond %}
+        <div>
+            <dt>{{ title }}</dt>
+            <dd>{{ var }}</dd>
+        </div>
+    {% endif %}
+{%- endmacro %}
+
+{% macro pkg_link(link, title, cond=link) -%}
+    {% if cond %}
+        <a href="{{ link }}" style="display: block">{{ title }}</a>
+    {% endif %}
+{%- endmacro %}
+
+{% block main %}
+    <section>
+        <header class="pkg-header">
+            <img class="pkg-icon" src="{{ pkg.icon.remote_url | fallback_icon }}" alt="App icon of {{ pkg.title }}" />
+            <h1 class="pkg-title">{{ pkg.title }} </h1>
+            <p class="pkg-summary">{{ pkg.summary }}</p>
+            <div class="pkg-version" title="Version {{ pkg.version.to_full_str() }}"> v{{ pkg.version.to_short_str() }}</div>
+        </header>
+        {% if pkg.screenshots %}
+            <section class="pkg-screenshots">
+                {% for screenshot in pkg.screenshots %}
+                    <img src="{{ screenshot.remote_url }}" alt="Screenshot of {{ pkg.name }}" />
+                {% endfor %}
+            </section>
+        {% endif %}
+        <p>
+            {% if pkg.markdown_url %}
+                {{ pkg.description }}
+            {% else %}
+                {{ pkg.description | paragraphise | safe }}
+            {% endif %}
+        </p>
+        <h2 class="header-underline">App information</h2>
+        <dl>
+            {{ info_block(pkg.name, "Package name") }}
+            {{ info_block(pkg.version.to_full_str(), "Version") }}
+            {{ info_block(pkg.licence, "Licence") }}
+            {{ info_block(pkg.developer_name, "Developer") }}
+            {{ info_block(pkg.packager_name, "Packager") }}
+        </dl>
+        <h2 class="header-underline">
+            <label for="pkg-arch-selector">Architecture-dependent information</label>
+            <select id="pkg-arch-selector" data-pref-id="architecture" autocomplete="off">
+            {% for arch in pkg.archs | sort %}
+                <option>{{ arch }}</option>
+            {% endfor %}
+            </select>
+        </h2>
+        <noscript><p>JavaScript is needed to see information for other architectures than {{ pkg.archs | first }}</p></noscript>
+        {% for arch in pkg.archs %}
+            <dl data-relevant-architecture="{{ arch }}" {{ ({"style": "display: none;"} if loop.index0 > 0 else {}) | xmlattr | safe }}>
+                {{ info_block(arch in pkg.download_size, "Download size", pkg.download_size[arch]|bytes) }}
+                {{ info_block(arch in pkg.install_size, "Installed size", pkg.install_size[arch]|bytes) }}
+                {{ info_block(arch in pkg.checksum_value, "Checksum (%s)" % pkg.checksum_type[arch], pkg.checksum_value[arch])}}
+            </dl>
+        {% endfor %}
+    </section>
+
+    {% if config.debug %}
+        <section>
+            <header><h2>Debug</h2></header>
+            <h3>YAML MetaData</h3>
+            <pre>{{ pkg.debug_yaml }} </pre>
+            <h3>Parse errors</h3>
+            {% for error in pkg.debug_yaml_errors %}
+                <p>
+                    <pre>{{ error }}</pre>
+                </p>
+            {% else %}
+                <p>No errors found!</p>
+            {% endfor %}
+        </section>
+    {% endif %}
+{% endblock main %}
+
+{% block sidebar %}
+    <section>
+        <header><h2>Download</h2></header>
+
+            {% if pkg.name not in config.chum_installer_pkgs %}
+                <p>The preferred way to download this app is via <a href="/apps/{{ chum_installer }}/">Chum</a>.
+                    If you wish to download the .rpm yourself, expand the section below.
+                </p>
+                <details>
+                    <summary>Download links</summary>
+            {% endif %}
+                    {% for arch, url in pkg.download_url | dictsort %}
+                    <a href="{{ config.repo_url_prefix }}{{ url }}" class="pkg-download-{{ arch }}" style="display: block;">{{ arch }} ({{ pkg.download_size[arch] | bytes }})</a>
+                    {% endfor %}
+        {% if pkg.name not in config.chum_installer_pkgs %}
+                </details>
+        {% endif %}
+    </section>
+    <section>
+        <header><h2>Links</h2></header>
+        {{ pkg_link(pkg.repo_url, "Source code repo") }}
+        {{ pkg_link(pkg.packaging_repo_url, "Packaging repo") }}
+        {% for title, link in pkg.links.items() %}
+            <a href="{{link}}" style="display: block">{{ title | title }}</a>
+        {% else %}
+            {% if pkg.url %}
+                <a href="{{ pkg.url }}" style="display: block">Project home</a>
+            {% endif %}
+        {% endfor %}
+    </section>
+    {% if pkg.debuginfo_package or pkg.debugsource_package %}
+        <section>
+            <header><h2>Debug packages</h2></header>
+            {{ pkg_link( pkg.debuginfo_package.web_url(), "Debug information", pkg.debuginfo_package) }}
+            {{ pkg_link( pkg.debugsource_package.web_url(), "Debug source", pkg.debugsource_package) }}
+        </section>
+    {% endif %}
+{% endblock %}

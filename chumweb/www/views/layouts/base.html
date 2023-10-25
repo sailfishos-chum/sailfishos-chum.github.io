@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html prefix="og: https://ogp.me/ns#" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %} Chum, a Sailfish OS community app repository {% endblock %}</title>
+        <meta property="viewport" content="width: device-width" />
+        <link rel="icon" href="/static/img/sailfishos-chum.svg">
+        <link rel="stylesheet" type="text/css" href="/static/style.css">
+        {%  block meta %}
+            <meta property="og:type" content="website" />
+            <meta property="og:site_name" content="Chum Sailfish OS App Repository" />
+            <meta property="og:url" content="{{ base_url }}" />
+        {% endblock meta %}
+        {% block header %}
+        {% endblock header %}
+        <script src="/static/user-preferences.js"></script>
+    </head>
+    <body>
+        <header class="section-site-info" style="text-align: right">
+            <img src="/static/img/sailfishos-chum.svg" />
+            <h1>Chum</h1>
+            <p>A Sailfish OS app repository by the community</p>
+        </header>
+        <nav class="section-site-nav sidebar-left" style="text-align: right">
+            <ul class="section-menu">
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/apps/index-a.html">All apps</a></li>
+                <li><a href="/pkgs/index-a.html">All packages</a></li>
+            </ul>
+        </nav>
+        <footer class="section-site-footer" style="text-align: right">
+            <p>
+                Last updated at {{ updated | format_datetime }}
+            </p>
+        </footer>
+        <main>
+            {% block main %}
+            {% endblock main %}
+        </main>
+        <section class="section-site-sidebar">
+            {% block sidebar %}
+                <p>Sidebar content</p>
+            {% endblock sidebar %}
+        </section>
+    </body>
+</html>

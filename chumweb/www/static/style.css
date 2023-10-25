@@ -1,0 +1,213 @@
+/**
+ *
+ */
+
+:root {
+    --color-bg: #ddd;
+    --color-bg-main: #ccc;
+    --color-fg: #000;
+    --color-fg-alt: #fff;
+    --color-fg-highlight-primary: #088;
+    --color-fg-highlight-secondary: #044;
+}
+
+a {
+    color: var(--color-fg-highlight-primary);
+}
+
+a:hover {
+    color: var(--color-fg-highlight-secondary);
+}
+
+body {
+    background-color: var(--color-bg);;
+    font-family: "sans-serif";
+
+    display: grid;
+    grid-template-columns: 250px 800px 250px;
+    grid-template-rows: min-content min-content 1fr;
+    grid-template-areas:
+            "site-info   main sidebar"
+            "site-nav    main sidebar"
+            "site-footer main sidebar";
+    justify-content: center;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+body > main {
+    padding: 1em 2em;
+}
+
+.section-site-info {
+    grid-area: site-info;
+}
+
+.section-site-nav {
+    grid-area: site-nav;
+}
+
+.section-site-sidebar {
+    grid-area: sidebar;
+}
+
+.section-site-footer {
+    border-top: 2px dashed var(--color-fg);
+    grid-area: site-footer;
+}
+
+main {
+    background-color: var(--color-bg-main);
+    grid-area: main;
+    border-left: 2px dashed var(--color-fg-highlight-primary);
+    border-right: 2px dashed var(--color-fg-highlight-primary);
+}
+
+header > h1, header > p, header > h2, .pkg-header > h2, .pkg-header p {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+header, header:not(body > header), .header-underline {
+    padding: 0.5em 0;
+    border-bottom: 2px dashed var(--color-fg);
+    margin-bottom: 0.5em;
+}
+
+body > header, body > nav, body > section, body > footer {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+nav ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+/**
+ * Package page
+ */
+
+.pkg-screenshots {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    height: 400px;
+    width: auto;
+    white-space: nowrap;
+}
+
+.pkg-screenshots > img {
+    display: inline-block;
+    height: 100%;
+}
+
+.pkg-header {
+    display: grid;
+    grid-template-areas:
+        "icon title version"
+        "icon summary summary";
+    grid-template-columns: 64px 1fr min-content;
+    column-gap: 1em;
+    align-items: center;
+}
+
+.pkg-header .pkg-icon {
+    width: 64px;
+    height: 64px;
+    grid-area: icon;
+}
+.pkg-header a.pkg-icon {
+    width: 64px;
+    grid-area: icon;
+    display: block;
+}
+
+.pkg-header .pkg-version {
+    grid-area: version;
+}
+
+.pkg-header .pkg-summary {
+    grid-area: summary;
+}
+
+.pkg-version::before {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: -2em;
+    border: 1em solid var(--color-bg-main);
+    border-right: 1em solid var(--color-fg-highlight-primary);
+    width: 0;
+    height: 0;
+    content: "";
+}
+
+.pkg-version {
+    position: relative;
+    background-color: var(--color-fg-highlight-primary);
+    border-left: 1px solid var(--color-fg-highlight-primary);
+    color: var(--color-fg-alt);
+    font-size: 75%;
+    display: inline-block;
+    margin-left: 2em;
+    padding-right: 0.5em;
+    line-height: 2em;
+    height: 2em;
+    float: right;
+}
+
+dl {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-row-gap: 0.5em;
+}
+
+dl dt {
+    font-weight: bold;
+}
+
+dl dt:after {
+    content: ":";
+}
+
+dl dd {
+    overflow-x: auto;
+    word-break: break-word;
+}
+
+/**
+ * App list
+ */
+.app-list {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1em;
+}
+
+.pkg-letter-links {
+    text-align: center;
+    padding-bottom: 0.5em;
+    margin-bottom: 0.5em;
+    border-bottom: 2px dashed var(--color-fg);
+}
+
+.pkg-letter-links > * {
+    font-weight: bold;
+    padding: 0.20em;
+}
+
+.pkg-letter-links a {
+}
+
+.pkg-letter-links .pkg-active-letter {
+    text-decoration: underline;
+}
+
+/** Architecture selectors */
+body.architecture--aarch64 .pkg-download-aarch64,
+body.architecture--armv7hl .pkg-download-armv7hl,
+body.architecture--i486 .pkg-download-i486 {
+    font-weight: bold;
+}

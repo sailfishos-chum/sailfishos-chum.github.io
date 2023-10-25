@@ -1,0 +1,42 @@
+{% extends "layouts/base.html" %}
+{% block title %} About Chum — {{ super() }}{% endblock %}
+
+{% block main %}
+    <header>
+        <h1>Chum Web</h1>
+    </header>
+    <p>
+        The SailfishOS:Chum community repository provides a collection of applications, tools and libraries for the
+        mobile operating system <a href="https://sailfishos.org/">Sailfish OS</a>, compiled for
+        various hardware architectures and OS release versions.
+    </p>
+    <h2>Goal</h2>
+    <p>
+        The ambition is to become the principal software distribution platform for Sailfish OS.
+    </p>
+    <p>
+        In contrast to the software distribution model of the Jolla Store or <a href="https://openrepos.net/">OpenRepos</a>,
+        to which binary packages are uploaded by developers, at SailfishOS:Chum software is compiled and packaged into
+        RPMs in a reproducible manner directly from its source code. The source code used for compiling and packaging is
+        submitted by developers to <abbr title="Open Build Service">OBS</abbr> (Open Build Service), which generates
+        multiple RPM files for various combinations of hardware architectures and Sailfish OS release versions.
+    </p>
+    <p>
+        This scheme ensures that the complete source code of all packages at SailfishOS:Chum is available and
+        inspectable there, and that all packages are generated solely from this source code. Hence all software
+        packages at SailfishOS:Chum are created in a transparent and fully traceable manner.
+    </p>
+    <p>
+        By collecting software for Sailfish OS in a single automated build system, collaboration between developers
+        through common packaging of shared libraries etc. is fostered, duplication of work for keeping these common
+        packages up-to-date is eliminated, and it becomes much easier to determine which pieces of software exist and
+        which are missing at the Sailfish OS OBS. Additionally this eases tracing multiple and potentially layered
+        dependencies ("dependency chains") which is crucial for keeping the software supply chains of complex
+        packages up-to-date.
+    </p>
+    <h2>Location</h2>
+    <p>
+        The SailfishOS:Chum repository is located at the
+        <a href="https://build.sailfishos.org/project/show/sailfishos:chum">the Sailfish OS OBS</a>.
+    </p>
+{% endblock main %}

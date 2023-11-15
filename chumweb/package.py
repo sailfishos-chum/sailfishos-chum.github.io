@@ -253,9 +253,9 @@ class Package:
         Returns the url for use in the web interface
         """
         if self.is_app():
-            return f"/apps/{self.name}"
+            return f"apps/{self.name}"
         else:
-            return f"/pkgs/{self.name}"
+            return f"pkgs/{self.name}"
 
     def caused_requests(self):
         return type(self.markdown_url) == str

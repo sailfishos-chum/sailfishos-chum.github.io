@@ -1,7 +1,7 @@
 {% macro package_item(pkg, container="div") -%}
     <{{container}} class="pkg-header">
-        <a class="pkg-icon" href="{{ pkg.web_url() }}"><img class="pkg-icon" src="{{ pkg.icon.remote_url | fallback_icon}}" alt="App icon of {{ pkg.title }}" /></a>
-        <h2 class="pkg-title"><a href="{{ pkg.web_url() }}">{{ pkg.title }}</a></h2>
+        <a class="pkg-icon" href="{{ pkg.web_url() | to_public_url }}"><img class="pkg-icon" src="{{ pkg.icon.remote_url | fallback_icon}}" alt="App icon of {{ pkg.title }}" /></a>
+        <h2 class="pkg-title"><a href="{{ pkg.web_url() | to_public_url }}">{{ pkg.title }}</a></h2>
         <p class="pkg-summary">{{ pkg.summary }}</p>
         <div class="pkg-version" title="Version {{ pkg.version.to_full_str() }}"> v{{ pkg.version.to_short_str() }}</div>
     </{{container}}>

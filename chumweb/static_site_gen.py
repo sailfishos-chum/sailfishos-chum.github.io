@@ -2,6 +2,7 @@
 This module generates the static website
 """
 import os
+from urllib.parse import urljoin
 
 from jinja2 import Environment, PackageLoader, Template, select_autoescape, pass_eval_context
 from jinja2.nodes import EvalContext
@@ -65,6 +66,8 @@ def gen_site(pkgs: List[Package], out_dir: Path):
         makedirs(www_apps_path)
         makedirs(www_pkgs_path)
 
+
+
     def pkgs_buckets() -> Dict[str, List[Package]]:
         dict: Dict[str, List[Package]] = {}
         for letter in ALPHABET + "?":
@@ -105,6 +108,7 @@ def gen_site(pkgs: List[Package], out_dir: Path):
     env.filters["paragraphise"] = _paragraphise_filter
     env.filters["fallback_icon"] = _fallback_icon_filter
     env.filters["format_datetime"] = _format_datetime
+    env.filters["to_public_url"] = _to_absolute_url_filter
 
     step_progress(sitegen_step, "Generating static pages", 2, total_sitegen_steps)
 
@@ -229,10 +233,19 @@ def _fallback_icon_filter(value: str):
     if value and value.strip():
         return value
     else:
-        return "/static/img/pkg-fallback.png"
+        return urljoin(CONFIG.public_url, "static/img/pkg-fallback.png")
 
 
 def _format_datetime(value: datetime, format_str=None):
     if format_str:
         return value.strftime(format_str)
     return value.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _to_absolute_url_filter(path: str) -> str:
+    """
+    Resolves a path to an absolute URL  based on the public URL in the configuration.
+
+    This way, we do not care whether the site gets deployed on a subdirectory or not
+    """
+    return urljoin(CONFIG.public_url, path)

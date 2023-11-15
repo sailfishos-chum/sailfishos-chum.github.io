@@ -16,7 +16,7 @@
 
 {% macro pkg_link(link, title, cond=link) -%}
     {% if cond %}
-        <a href="{{ link }}" style="display: block">{{ title }}</a>
+        <a href="{{ link | to_public_url }}" style="display: block">{{ title }}</a>
     {% endif %}
 {%- endmacro %}
 
@@ -90,7 +90,7 @@
         <header><h2>Download</h2></header>
 
             {% if pkg.name not in config.chum_installer_pkgs %}
-                <p>The preferred way to download this app is via <a href="/apps/{{ chum_installer }}/">Chum</a>.
+                <p>The preferred way to download this app is via <a href="{{ "apps/%s/" | format(chum_installer) | to_public_url }}">Chum</a>.
                     If you wish to download the .rpm yourself, expand the section below.
                 </p>
                 <details>

@@ -12,7 +12,7 @@
         {% if current_letter and letter == current_letter %}
             <span class="pkg-active-letter"> {{ letter_map[letter].display }}</span>
         {% else %}
-            <a href="/{{ current_filter }}/index{{ letter_map[letter].file }}.html">{{ letter_map[letter].display }}</a>
+            <a href="{{ "%s/index%s.html" | format(current_filter, letter_map[letter].file) | to_public_url }}">{{ letter_map[letter].display }}</a>
         {% endif %}
     {% endfor %}
     ]

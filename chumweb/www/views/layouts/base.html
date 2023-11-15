@@ -4,8 +4,8 @@
         <meta charset="UTF-8" />
         <title>{% block title %} Chum, a Sailfish OS community app repository {% endblock %}</title>
         <meta property="viewport" content="width: device-width" />
-        <link rel="icon" href="/static/img/sailfishos-chum.svg">
-        <link rel="stylesheet" type="text/css" href="/static/style.css">
+        <link rel="icon" href="{{ "static/img/sailfishos-chum.svg" | to_public_url }}">
+        <link rel="stylesheet" type="text/css" href="{{ "static/style.css" | to_public_url }}">
         {%  block meta %}
             <meta property="og:type" content="website" />
             <meta property="og:site_name" content="Chum Sailfish OS App Repository" />
@@ -13,7 +13,7 @@
         {% endblock meta %}
         {% block header %}
         {% endblock header %}
-        <script src="/static/user-preferences.js"></script>
+        <script src="{{ "static/user-preferences.js" | to_public_url }}"></script>
     </head>
     <body>
         <!-- Begin beta, non-official notice -->
@@ -22,16 +22,16 @@
         </div>
         <!-- End notice -->
         <header class="section-site-info" style="text-align: right">
-            <img src="/static/img/sailfishos-chum.svg" />
+            <img src="{{ "static/img/sailfishos-chum.svg" | to_public_url}}" />
             <h1>Chum</h1>
             <p>A Sailfish OS app repository by the community</p>
         </header>
         <nav class="section-site-nav sidebar-left" style="text-align: right">
             <ul class="section-menu">
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/about.html">About</a></li>
-                <li><a href="/apps/index-a.html">All apps</a></li>
-                <li><a href="/pkgs/index-a.html">All packages</a></li>
+                <li><a href="{{ "index.html" | to_public_url }}">Home</a></li>
+                <li><a href="{{ "about.html" | to_public_url }}">About</a></li>
+                <li><a href="{{ "apps/index-a.html" | to_public_url }}">All apps</a></li>
+                <li><a href="{{ "pkgs/index-a.html" | to_public_url }}">All packages</a></li>
             </ul>
         </nav>
         <footer class="section-site-footer" style="text-align: right">

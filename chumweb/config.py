@@ -1,7 +1,11 @@
+"""
+Simple and hastily written configuration system that parses
+environment variables/cli arguments parser
+"""
 import os
 import sys
 from dataclasses import dataclass, field, fields, Field
-from typing import List, Any
+from typing import List
 
 
 @dataclass

@@ -1,5 +1,6 @@
-import base64
-import os
+"""
+This module is responsible for finding package repos, downloading the indexes and parsing metadata.
+"""
 from functools import reduce
 from gzip import GzipFile
 from os import makedirs
@@ -14,9 +15,6 @@ import requests
 import xml.dom.minidom as minidom
 
 from .progress import begin_step, step_progress, StepHandle
-
-OBS_USER = os.getenv("OBS_USER")
-OBS_PASS = os.getenv("OBS_PASS")
 
 DEFAULT_HEADERS = {
     "User-Agent": f"{CONFIG.user_agent} ({CONFIG.public_url}/about-generator.html)"

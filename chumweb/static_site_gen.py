@@ -23,6 +23,11 @@ ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 
 def gen_site(pkgs: List[Package], out_dir: Path):
+    """
+    Generates the static website given a list of packages
+    :param pkgs: The packages to generate the website for
+    :param out_dir: The directory to output the generated website in
+    """
     sitegen_step = begin_step("Generating site")
     www_path = out_dir.joinpath("www")
     www_pkgs_path = www_path.joinpath("pkgs")

@@ -25,11 +25,12 @@ body {
 
     display: grid;
     grid-template-columns: 250px 800px 250px;
-    grid-template-rows: min-content min-content 1fr;
+    grid-template-rows: min-content min-content min-content 1fr;
     grid-template-areas:
-            "site-info   main sidebar"
-            "site-nav    main sidebar"
-            "site-footer main sidebar";
+            "notice      notice notice"
+            "site-info   main   sidebar"
+            "site-nav    main   sidebar"
+            "site-footer main   sidebar";
     justify-content: center;
     margin: 0 auto;
     min-height: 100vh;

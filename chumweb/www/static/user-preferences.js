@@ -1,12 +1,26 @@
 /**
+ * @template T Preference value type
+ * @typedef {object} Preference
+ * @property {T} default The default value of the preference if none is set
+ * @property {T} current The current value of the preference
+ * @property {function(T[], T): ?T} findBestOption A method that chooses the option closest to the user preference given the available options
+ * @property {function(T): boolean} allowSavePref Whether the given value is allowed to be stored
+ */
+/**
+ * @typedef {object} UserPreferences
+ * @property {Object<string, Preference>} prefs
+ */
+/**
  * Class for saving, loading and applying user preferences.
+ * @class
+ * @returns {UserPreferences} The newly created instance
  */
 function UserPreferences() {
     this.prefs = {
         architecture: {
             default: "aarch64",
             current: null,
-            /// Find the closest match for the available options that matches this preference's value
+            // Find the closest match for the available options that matches this preference's value
             findBestOption: (options, preferredValue) => {
                 console.log("findBestOption: ", options, preferredValue)
                 if (options.indexOf(preferredValue) >= 0) {
@@ -45,8 +59,9 @@ UserPreferences.prototype.loadPrefs = function() {
 
 /**
  * Gets a preference by name
- * @param prefName The name of the preference to get
- * @param options Optionally, a set of options to choose from. The best option according to the current preference will
+ * @template T Preference value type
+ * @param {string} prefName The name of the preference to get
+ * @param {T[]} options Optionally, a set of options to choose from. The best option according to the current preference will
  * be picked
  * @returns The chosen preference. If the options parameter is supplied, it will be one of the supplied options, else it
  * will be the preferred option.
@@ -61,8 +76,9 @@ UserPreferences.prototype.getPref = function(prefName, options=[]) {
 
 /**
  * Stores a preference. Does not update the UI
- * @param prefName The name of the preference to save
- * @param prefValue The value of the preference to save
+ * @template T Preference value type
+ * @param {string} prefName The name of the preference to save
+ * @param {T} prefValue The value of the preference to save
  */
 UserPreferences.prototype.setPref = function(prefName, prefValue) {
     this.prefs[prefName].current = prefValue;
@@ -83,8 +99,9 @@ UserPreferences.prototype.setPref = function(prefName, prefValue) {
  * 1. Sets a `${prefName}--${prefValue} class on the body element and removes old ones
  * 2. Shows and hides elements with the `data-relevant-${prefName}` attribute matching or not matching the value respectively
  *
- * @param prefName Name of the preference to save
- * @param prefValue Value of the preference to save
+ * @template T Preference value type
+ * @param {string} prefName Name of the preference to save
+ * @param {T} prefValue Value of the preference to save
  */
 UserPreferences.prototype.applyPreference = function(prefName, prefValue) {
     let classesToRemove = [];

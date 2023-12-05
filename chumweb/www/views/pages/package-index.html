@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% block title %} {{ name }} — {{ super() }}{% endblock %}
+{% block meta %} {{ meta.open_graph_site(name, "/") }} {% endblock meta %}
 {% import "parts/package-item.html" as package_item %}
 
 {% block main %}

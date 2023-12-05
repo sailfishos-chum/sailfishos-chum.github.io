@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% block title %} Home — {{ super() }}{% endblock %}
+{% block meta %} {{ meta.open_graph_site("Home", "/") }} {% endblock meta %}
 
 {% block main %}
     <header>

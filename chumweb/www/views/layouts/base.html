@@ -1,3 +1,4 @@
+{% import "layouts/meta.html" as meta %}
 <!DOCTYPE html>
 <html prefix="og: https://ogp.me/ns#" lang="en">
     <head>
@@ -7,9 +8,7 @@
         <link rel="icon" href="{{ "static/img/sailfishos-chum.svg" | to_public_url }}">
         <link rel="stylesheet" type="text/css" href="{{ "static/style.css" | to_public_url }}">
         {%  block meta %}
-            <meta property="og:type" content="website" />
-            <meta property="og:site_name" content="Chum Sailfish OS App Repository" />
-            <meta property="og:url" content="{{ base_url }}" />
+            {{ meta.open_graph_site("Chum") }}
         {% endblock meta %}
         {% block header %}
         {% endblock header %}

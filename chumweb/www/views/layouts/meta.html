@@ -1,0 +1,9 @@
+{% macro open_graph_site(title, path="/", image="static/img/sailfishos-chum.svg") -%}
+    <!-- OG meta tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ title }}">
+    <meta property="og:site_name" content="Chum, a Sailfish OS App Repository" />
+    <meta property="og:image" content="{{ image | to_public_url }}" />
+    <meta property="og:url" content="{{ path | to_public_url }}" />
+    <!-- end OG meta tags -->
+{%- endmacro %}

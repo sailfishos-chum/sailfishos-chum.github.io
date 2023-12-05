@@ -2,7 +2,7 @@
 {% block title %} {{ pkg.title }} — {{ super() }}{% endblock %}
 
 {% block meta %}
-    {{ meta.open_graph_site(pkg.title,  pkg.icon.remote_url | fallback_icon, pkg.web_url()) }}
+    {{ meta.open_graph_site(pkg.title,  pkg.web_url(), pkg.icon.remote_url | fallback_icon) }}
 {% endblock meta %}
 
 {% macro info_block(cond, title, var=cond) -%}

@@ -36,8 +36,12 @@ body {
     min-height: 100vh;
 }
 
-body > main {
+main {
     padding: 1em 2em;
+}
+
+.section-site-info, .section-site-nav, .section-site-footer {
+    text-align: right;
 }
 
 .section-site-info {
@@ -69,20 +73,25 @@ header > h1, header > p, header > h2, .pkg-header > h2, .pkg-header p {
     margin-bottom: 0;
 }
 
-header, header:not(body > header), .header-underline {
+header, header:not(.section-site-info){
     padding: 0.5em 0;
     border-bottom: 2px dashed var(--color-fg);
     margin-bottom: 0.5em;
 }
 
-body > header, body > nav, body > section, body > footer {
+/*body > header, body > nav, body > section, body > footer*/
+.section-secondary {
     margin-left: 1em;
     margin-right: 1em;
 }
 
-nav ul {
+.link-list {
     list-style: none;
     padding-left: 0;
+}
+
+pre {
+    overflow-x: auto;
 }
 
 /**
@@ -110,6 +119,13 @@ nav ul {
     grid-template-columns: 64px 1fr min-content;
     column-gap: 1em;
     align-items: center;
+}
+
+.pkg-header:not(:first-child) {
+    margin-top: 0.25em;
+}
+.pkg-header:not(:last-child) {
+    margin-bottom: 0.25em;
 }
 
 .pkg-header .pkg-icon {
@@ -174,6 +190,7 @@ dl dt:after {
 dl dd {
     overflow-x: auto;
     word-break: break-word;
+    margin-left: 0;
 }
 
 /**
@@ -211,4 +228,77 @@ body.architecture--aarch64 .pkg-download-aarch64,
 body.architecture--armv7hl .pkg-download-armv7hl,
 body.architecture--i486 .pkg-download-i486 {
     font-weight: bold;
+}
+
+/* Small screen view */
+@media (max-device-width: 1300px) {
+    body {
+        grid-template-columns: 250px minmax(calc(100% - 250px), 800px);
+        grid-template-rows: min-content min-content min-content min-content 1fr;
+        grid-template-areas:
+                "notice notice"
+                "site-info main"
+                "site-nav main"
+                "sidebar main"
+                "site-footer main";
+    }
+
+    .section-site-sidebar {
+        text-align: right;
+    }
+}
+
+/* Mobile view */
+@media (max-device-width: 800px) {
+    main {
+        padding: 1em;
+        border: none;
+        border-top: 2px dashed var(--color-fg-highlight-primary);
+        border-bottom: 2px dashed var(--color-fg-highlight-primary);
+    }
+
+    .section-site-info, .section-site-nav, .section-site-footer {
+        text-align: center;
+    }
+
+    .section-site-sidebar {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        text-align: center;
+    }
+
+    body {
+        grid-template-columns: 100%;
+        grid-template-areas:
+                "notice"
+                "site-info"
+                "site-nav"
+                "main"
+                "sidebar"
+                "site-footer";
+    }
+
+    dl {
+        grid-template-columns: 1fr;
+    }
+
+    .pkg-version {
+        display: none;
+    }
+}
+
+/* Either support touch or it is a small device (since the pointer: coarse does not work on the SFOS browser */
+@media (pointer: coarse), (max-device-width: 800px){
+    .link-list li a {
+        padding: 0.5em 0;
+        display: block;
+    }
+    .link-list li:not(:last-child) a {
+        border-bottom: 1px dotted var(--color-fg);
+    }
+
+    .pkg-letter-links > * {
+        display: inline-block;
+        padding: 0.5em;
+    }
 }

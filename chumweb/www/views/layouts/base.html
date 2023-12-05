@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %} Chum, a Sailfish OS community app repository {% endblock %}</title>
-        <meta property="viewport" content="width: device-width" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="{{ "static/img/sailfishos-chum.svg" | to_public_url }}">
         <link rel="stylesheet" type="text/css" href="{{ "static/style.css" | to_public_url }}">
         {%  block meta %}
@@ -21,20 +21,20 @@
             <strong>Notice:</strong> This is beta software, not officially endorsed by the Chum maintainers
         </div>
         <!-- End notice -->
-        <header class="section-site-info" style="text-align: right">
+        <header class="section-site-info section-secondary">
             <img src="{{ "static/img/sailfishos-chum.svg" | to_public_url}}" />
             <h1>Chum</h1>
             <p>A Sailfish OS app repository by the community</p>
         </header>
-        <nav class="section-site-nav sidebar-left" style="text-align: right">
-            <ul class="section-menu">
+        <nav class="section-site-nav section-secondary sidebar-left">
+            <ul class="section-menu link-list">
                 <li><a href="{{ "index.html" | to_public_url }}">Home</a></li>
                 <li><a href="{{ "about.html" | to_public_url }}">About</a></li>
                 <li><a href="{{ "apps/index-a.html" | to_public_url }}">All apps</a></li>
                 <li><a href="{{ "pkgs/index-a.html" | to_public_url }}">All packages</a></li>
             </ul>
         </nav>
-        <footer class="section-site-footer" style="text-align: right">
+        <footer class="section-site-footer section-secondary">
             <p>
                 Last updated at {{ updated | format_datetime }}
             </p>
@@ -43,8 +43,9 @@
             {% block main %}
             {% endblock main %}
         </main>
-        <section class="section-site-sidebar">
+        <section class="section-site-sidebar section-secondary">
             {% block sidebar %}
+                <header><h2>Sidebar</h2></header>
                 <p>Sidebar content</p>
             {% endblock sidebar %}
         </section>

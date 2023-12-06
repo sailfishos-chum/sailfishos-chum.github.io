@@ -19,14 +19,15 @@ from datetime import datetime
 import importlib.resources as resources
 
 from .progress import begin_step, step_progress
+from .repo_loader import RepoInfo
 
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 
-def gen_site(pkgs: List[Package], out_dir: Path):
+def gen_site(repo_info: RepoInfo, out_dir: Path):
     """
     Generates the static website given a list of packages
-    :param pkgs: The packages to generate the website for
+    :param repo_info: The repository info and packages to generate the website for
     :param out_dir: The directory to output the generated website in
     """
     sitegen_step = begin_step("Generating site")
@@ -35,12 +36,13 @@ def gen_site(pkgs: List[Package], out_dir: Path):
     www_apps_path = www_path.joinpath("apps")
     updated = datetime.today()
 
-    sorted_pkgs = sorted([pkg for pkg in pkgs if not pkg.is_debug()], key=lambda pkg: str(pkg.title).lower())
+    sorted_pkgs = sorted([pkg for pkg in repo_info.packages if not pkg.is_debug()], key=lambda pkg: str(pkg.title).lower())
 
     def render_template(template: Template, out_file: str | Path, **kwargs):
         kwargs["updated"] = updated
         kwargs["chum_installer"] = "sailfishos-chum-gui-installer"
         kwargs["config"] = CONFIG
+        kwargs["repo_version"] = repo_info.version
         template.stream(**kwargs).dump(str(out_file))
 
     def _copy_dir(source, dest: Path):
@@ -120,11 +122,11 @@ def gen_site(pkgs: List[Package], out_dir: Path):
 
     about_generator = env.get_template("pages/about-generator.html")
     render_template(about_generator, www_path.joinpath("about-generator.html"),
-                    pkgs=[pkg for pkg in pkgs if pkg.caused_requests()])
+                    pkgs=[pkg for pkg in repo_info.packages if pkg.caused_requests()])
 
     step_progress(sitegen_step, "Generating package pages", 3, total_sitegen_steps)
 
-    for pkg in pkgs:
+    for pkg in repo_info.packages:
         create_package_page(pkg)
 
     letter_map = {l: {"display": l.upper(), "file": f"-{l}"} for l in ALPHABET}

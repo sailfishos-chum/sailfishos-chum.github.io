@@ -13,6 +13,6 @@ if __name__ == "__main__":
     if CONFIG.repo_data_dir:
         load_repo_kwargs["data_path"] = Path(CONFIG.repo_data_dir)
 
-    pkgs = load_repo(CONFIG.obs_url, CONFIG.obs_project, (CONFIG.obs_user, CONFIG.obs_pass), CONFIG.repo_url_prefix,
+    repo_info = load_repo(CONFIG.obs_url, CONFIG.obs_project, (CONFIG.obs_user, CONFIG.obs_pass), CONFIG.repo_url_prefix,
                      out_dir, **load_repo_kwargs)
-    gen_site(pkgs, out_dir)
+    gen_site(repo_info, out_dir)

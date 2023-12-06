@@ -1,6 +1,7 @@
 """
 This module is responsible for finding package repos, downloading the indexes and parsing metadata.
 """
+from dataclasses import dataclass
 from functools import reduce
 from gzip import GzipFile
 from os import makedirs
@@ -23,6 +24,12 @@ DEFAULT_HEADERS = {
 OBS_API_HEADERS = DEFAULT_HEADERS | {
     "Accept": "application/xml;charset=utf-8"
 }
+
+
+@dataclass
+class RepoInfo:
+    packages: List[Package]
+    version: str  # SFOS version
 
 
 # OBS API: https://api.opensuse.org/apidocs/index#/Search/get_search_package
@@ -80,7 +87,7 @@ class LoadRepoOptions(TypedDict):
 
 
 def load_repo(obs_url: str, obs_project: str, obs_auth: Tuple[str, str], repo_url: str,
-              out_dir: Path, **kwargs: Unpack[LoadRepoOptions]) -> List[Package]:
+              out_dir: Path, **kwargs: Unpack[LoadRepoOptions]) -> RepoInfo:
     if "repos" in kwargs:
         repos = kwargs["repos"]
     else:
@@ -119,7 +126,9 @@ def load_repo(obs_url: str, obs_project: str, obs_auth: Tuple[str, str], repo_ur
         remote_desc_step = begin_step("Loading remote descriptions")
         load_remote_descriptions(all_pkg_list.values(), remote_desc_step)
 
-    return list(all_pkg_list.values())
+    result = RepoInfo(list(all_pkg_list.values()), repos[0].split('_')[0])
+
+    return result
 
 
 def save_repo_data(repo_url: str, repo_name: str, out_dir: Path):

@@ -1,4 +1,6 @@
 {% extends "layouts/base.html" %}
+{% import "parts/package-item.html" as package_item %}
+
 {% block title %} {{ pkg.title }} — {{ super() }}{% endblock %}
 
 {% block meta %}
@@ -23,7 +25,7 @@
 {% block main %}
     <section>
         <header class="pkg-header">
-            <img class="pkg-icon" src="{{ pkg.icon.remote_url | fallback_icon }}" alt="App icon of {{ pkg.title }}" />
+            {{ package_item.package_icon(pkg, "pkg-icon") }}
             <h1 class="pkg-title">{{ pkg.title }} </h1>
             <p class="pkg-summary">{{ pkg.summary }}</p>
             <div class="pkg-version" title="Version {{ pkg.version.to_full_str() }}"> v{{ pkg.version.to_short_str() }}</div>
@@ -69,6 +71,7 @@
                 {{ info_block(pkg.licence, "Licence") }}
                 {{ info_block(pkg.developer_name, "Developer") }}
                 {{ info_block(pkg.packager_name, "Packager") }}
+                {{ info_block(pkg.updated | format_datetime, "Last updated") }}
             </dl>
         </section>
         <section>

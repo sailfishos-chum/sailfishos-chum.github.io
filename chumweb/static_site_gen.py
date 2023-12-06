@@ -2,6 +2,7 @@
 This module generates the static website
 """
 import os
+import random
 from urllib.parse import urljoin
 
 from jinja2 import Environment, PackageLoader, Template, select_autoescape, pass_eval_context
@@ -37,12 +38,17 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
     updated = datetime.today()
 
     sorted_pkgs = sorted([pkg for pkg in repo_info.packages if not pkg.is_debug()], key=lambda pkg: str(pkg.title).lower())
+    recently_updated_pkgs = sorted(
+        [pkg for pkg in repo_info.packages if pkg.is_app()],
+        reverse=True, key=lambda pkg: pkg.updated
+    )[:CONFIG.updated_apps_count]
 
     def render_template(template: Template, out_file: str | Path, **kwargs):
         kwargs["updated"] = updated
         kwargs["chum_installer"] = "sailfishos-chum-gui-installer"
         kwargs["config"] = CONFIG
         kwargs["repo_version"] = repo_info.version
+        kwargs["recently_updated_pkgs"] = recently_updated_pkgs
         template.stream(**kwargs).dump(str(out_file))
 
     def _copy_dir(source, dest: Path):
@@ -115,7 +121,8 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
     step_progress(sitegen_step, "Generating static pages", 2, total_sitegen_steps)
 
     home_template = env.get_template("pages/index.html")
-    render_template(home_template, www_path.joinpath("index.html"))
+    featured_apps = random.sample([pkg for pkg in sorted_pkgs if pkg.is_app()], CONFIG.featured_apps_count)
+    render_template(home_template, www_path.joinpath("index.html"), featured_apps=featured_apps)
 
     about_template = env.get_template("pages/about.html")
     render_template(about_template, www_path.joinpath("about.html"))

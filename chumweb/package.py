@@ -3,6 +3,7 @@ Data classes for package metadata
 """
 from dataclasses import dataclass, field
 import enum
+from datetime import datetime
 from enum import StrEnum
 from types import NoneType
 from typing import List, Dict, Self, Set
@@ -91,6 +92,7 @@ class Package:
     packaging_repo_url: str | None = None
     debug_yaml: str | None = None
     debug_yaml_errors: List[Exception] = field(default_factory=list)
+    updated: datetime | None = field(default_factory=lambda: datetime.fromtimestamp(0))
 
     archs: Set[str] = field(default_factory=set)
     download_size: Dict[str, int] = field(default_factory=dict)
@@ -211,6 +213,7 @@ class Package:
         p.url = try_get_str("url")
         p.title = name_to_title(p.name)
         p.licence = try_get_str("rpm:license")
+        p.updated = datetime.fromtimestamp(float(try_get_attribute_tags("time", "file")[0]))
 
         p.download_size[arch], p.install_size[arch] = try_get_attribute_tags("size", "package", "installed")
         p.download_url[arch] = try_get_attribute_tags("location", "href")[0]

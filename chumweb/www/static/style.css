@@ -119,6 +119,7 @@ pre {
     grid-template-columns: 64px 1fr min-content;
     column-gap: 1em;
     align-items: center;
+    text-align: start;
 }
 
 .pkg-header:not(:first-child) {
@@ -145,6 +146,21 @@ pre {
 
 .pkg-header .pkg-summary {
     grid-area: summary;
+}
+
+.pkg-header-mini {
+    display: grid;
+    grid-template-areas:
+        "icon title"
+        "icon summary";
+    grid-template-columns: 48px 1fr;
+    column-gap: 0.5em;
+    align-items: center;
+}
+
+.pkg-header.pkg-header-mini .pkg-icon {
+    width: 48px;
+    height: 48px;
 }
 
 .pkg-version::before {

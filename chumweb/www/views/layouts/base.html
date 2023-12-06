@@ -1,4 +1,5 @@
 {% import "layouts/meta.html" as meta %}
+{% import "parts/package-item.html" as package_item %}
 <!DOCTYPE html>
 <html prefix="og: https://ogp.me/ns#" lang="en">
     <head>
@@ -12,6 +13,7 @@
         {% endblock meta %}
         {% block header %}
         {% endblock header %}
+        <script src="{{ "static/fallback-image.js" | to_public_url }}"></script>
         <script src="{{ "static/user-preferences.js" | to_public_url }}"></script>
     </head>
     <body>
@@ -21,7 +23,7 @@
         </div>
         <!-- End notice -->
         <header class="section-site-info section-secondary">
-            <img src="{{ "static/img/sailfishos-chum.svg" | to_public_url}}" />
+            <img src="{{ "static/img/sailfishos-chum.svg" | to_public_url}}" width="84" height="84" alt="Chum icon" />
             <h1>Chum</h1>
             <p>A Sailfish OS app repository by the community</p>
         </header>
@@ -44,8 +46,16 @@
         </main>
         <section class="section-site-sidebar section-secondary">
             {% block sidebar %}
-                <header><h2>Sidebar</h2></header>
-                <p>Sidebar content</p>
+                <header><h2>Recently updated</h2></header>
+                <p>
+                    <ul class="app-list">
+                        {% for pkg in recently_updated_pkgs %}
+                            {{ package_item.package_item_small(pkg, "li") }}
+                        {% else %}
+                            <p>Nothing found</p>
+                        {% endfor %}
+                    </ul>
+                </p>
             {% endblock sidebar %}
         </section>
     </body>

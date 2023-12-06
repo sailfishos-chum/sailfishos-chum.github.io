@@ -1,8 +1,24 @@
+{% macro package_icon(pkg, class=none) -%}
+    <picture {% if class %} class="{{ class }}" {% endif %}>
+        <source srcset="{{ pkg.icon.remote_url | fallback_icon }}" />
+        <source srcset="{{ "/static/img/pkg-fallback.png" | to_public_url }}" />
+        <img {% if class %} class="{{ class }}" {% endif %} src="{{ "/static/img/pkg-fallback.png" | to_public_url }}" alt="App icon of {{ pkg.title }}" onerror="loadImageFallback.call(this)">
+    </picture>
+{%- endmacro %}
+
 {% macro package_item(pkg, container="div") -%}
     <{{container}} class="pkg-header">
-        <a class="pkg-icon" href="{{ pkg.web_url() | to_public_url }}"><img class="pkg-icon" src="{{ pkg.icon.remote_url | fallback_icon}}" alt="App icon of {{ pkg.title }}" /></a>
+        <a class="pkg-icon" href="{{ pkg.web_url() | to_public_url }}">{{ package_icon(pkg, "pkg-icon") }}</a>
         <h2 class="pkg-title"><a href="{{ pkg.web_url() | to_public_url }}">{{ pkg.title }}</a></h2>
         <p class="pkg-summary">{{ pkg.summary }}</p>
         <div class="pkg-version" title="Version {{ pkg.version.to_full_str() }}"> v{{ pkg.version.to_short_str() }}</div>
+    </{{container}}>
+{%- endmacro %}
+
+{% macro package_item_small(pkg, container="div") -%}
+    <{{container}} class="pkg-header pkg-header-mini">
+    <a class="pkg-icon" href="{{ pkg.web_url() | to_public_url }}">{{ package_icon(pkg, "pkg-icon") }}</a>
+    <p class="pkg-title"><a href="{{ pkg.web_url() | to_public_url }}">{{ pkg.title }}</a></p>
+    <p class="pkg-summary">{{ pkg.updated | format_datetime("%-d %b %y at %H:%m") }}</p>
     </{{container}}>
 {%- endmacro %}

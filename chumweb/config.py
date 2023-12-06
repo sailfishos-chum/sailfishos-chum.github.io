@@ -46,6 +46,8 @@ class Config:
     repo_data_dir: str | None = None
     user_agent: str = "chumweb/1.0"
     source_code_url: str = ""
+    featured_apps_count = 10
+    updated_apps_count = 6
 
 
 def init_config() -> Config:

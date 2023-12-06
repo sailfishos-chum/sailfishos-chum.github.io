@@ -1,6 +1,7 @@
 {% extends "layouts/base.html" %}
 {% block title %} Home — {{ super() }}{% endblock %}
 {% block meta %} {{ meta.open_graph_site("Home", "/") }} {% endblock meta %}
+{% import "parts/package-item.html" as package_item %}
 
 {% block main %}
     <header>
@@ -14,6 +15,13 @@
 
     <section>
         <header><h2>Featured apps</h2></header>
+        <ul class="app-list">
+            {% for pkg in featured_apps %}
+                {{ package_item.package_item(pkg, "li") }}
+            {% else %}
+                <p>Nothing found</p>
+            {% endfor %}
+        </ul>
     </section>
 
 {% endblock main %}

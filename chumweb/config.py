@@ -24,6 +24,8 @@ class Config:
     ###########################################################################
     # Directory to store output
     out_dir: str = "out/"
+    # File to output the job summary to (a Markdown file giving a summary of the job)
+    job_summary: str = "out/summary.md"
     # A list of repos to download
     repos: List[str] = field(default_factory=list)
     # The open build service location
@@ -48,8 +50,6 @@ class Config:
     source_code_url: str = ""
     featured_apps_count = 10
     updated_apps_count = 6
-    # Where to output the Job summary (a Markdown file giving a summary of the job)
-    job_summary = "out/summary.md"
 
 
 def init_config() -> Config:

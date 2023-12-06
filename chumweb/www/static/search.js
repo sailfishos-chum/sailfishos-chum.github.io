@@ -89,8 +89,8 @@ class SearchForm extends HTMLFormElement {
 
     _clearResults() {
         if (!this.resultsContainer) this.resultsContainer = document.getElementById("search-results")
-        for (const child of this.resultsContainer.querySelectorAll("#search-results > *:not(header, noscript)")) {
-            this.resultsContainer.removeChild(child)
+        while (this.resultsContainer.firstChild) {
+            this.resultsContainer.removeChild(this.resultsContainer.firstChild)
         }
         document.getElementById("search-results-empty").style.display = "none";
         document.getElementById("search-results-busy").style.display = "none";

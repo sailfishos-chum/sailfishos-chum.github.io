@@ -154,7 +154,7 @@ class Package:
             # https://github.com/sailfishos-chum/sailfishos-chum-gui/blob/0b2882fad79673b762ca184cd242d02334f1d8d1/src/chumpackage.cpp#L152C1-L152C108
             # Metadata, in YAML format, is put as the last paragraph of the application description. Paragraphs are
             # split by tww newlines.
-            paragraphs = [line.strip() for line in re.split(r"(?m)^\s*$", description) if line.strip()]
+            paragraphs = [line for line in re.split(r"(?m)^\s*$", description) if line.strip()]
             if not paragraphs:
                 return
 

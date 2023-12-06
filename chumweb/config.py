@@ -48,6 +48,8 @@ class Config:
     source_code_url: str = ""
     featured_apps_count = 10
     updated_apps_count = 6
+    # Where to output the Job summary (a Markdown file giving a summary of the job)
+    job_summary = "out/summary.md"
 
 
 def init_config() -> Config:

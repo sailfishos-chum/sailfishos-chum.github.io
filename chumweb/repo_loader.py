@@ -29,7 +29,14 @@ OBS_API_HEADERS = DEFAULT_HEADERS | {
 @dataclass
 class RepoInfo:
     packages: List[Package]
+    repos: List[str]
     version: str  # SFOS version
+
+    def repo_archs(self):
+        """
+        :return: The architecture for which there is a repository
+        """
+        return [repo.split("_")[1] for repo in self.repos]
 
 
 # OBS API: https://api.opensuse.org/apidocs/index#/Search/get_search_package
@@ -126,7 +133,7 @@ def load_repo(obs_url: str, obs_project: str, obs_auth: Tuple[str, str], repo_ur
         remote_desc_step = begin_step("Loading remote descriptions")
         load_remote_descriptions(all_pkg_list.values(), remote_desc_step)
 
-    result = RepoInfo(list(all_pkg_list.values()), repos[0].split('_')[0])
+    result = RepoInfo(list(all_pkg_list.values()), repos, repos[0].split('_')[0])
 
     return result
 

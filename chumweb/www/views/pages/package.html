@@ -56,7 +56,7 @@
                 {% endif %}
                         <ul class="link-list">
                         {% for arch, url in pkg.download_url | dictsort %}
-                            <li><a href="{{ config.repo_url_prefix }}{{ url }}" class="pkg-download-{{ arch }}">{{ pkg.name }}-{{ arch }}.rpm ({{ pkg.download_size[arch] | bytes }})</a></li>
+                            <li><a href="{{ repo_url_prefixes[arch] }}{{ url }}" class="pkg-download-{{ arch }}">{{ pkg.name }}-{{ arch }}.rpm ({{ pkg.download_size[arch] | bytes }})</a></li>
                         {% endfor %}
                         </ul>
             {% if pkg.name not in config.chum_installer_pkgs %}
@@ -77,7 +77,7 @@
         <section>
             <header>
                 <h2>
-                    <label for="pkg-arch-selector">Architecture-dependent information</label>
+                    <label for="pkg-arch-selector">Package information</label>
                     <select id="pkg-arch-selector" data-pref-id="architecture" autocomplete="off">
                     {% for arch in pkg.archs | sort %}
                         <option>{{ arch }}</option>
@@ -120,10 +120,10 @@
             {{ pkg_link(pkg.repo_url, "Source code repo") }}
             {{ pkg_link(pkg.packaging_repo_url, "Packaging repo") }}
             {% for title, link in pkg.links.items() %}
-                <li><a href="{{link}}" style="display: block">{{ title | title }}</a></li>
+                <li><a href="{{link}}">{{ title | title }}</a></li>
             {% else %}
                 {% if pkg.url %}
-                    <li><a href="{{ pkg.url }}" style="display: block">Project home</a></li>
+                    <li><a href="{{ pkg.url }}">Project home</a></li>
                 {% endif %}
             {% endfor %}
         </ul>

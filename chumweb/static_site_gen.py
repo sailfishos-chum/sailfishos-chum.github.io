@@ -38,6 +38,11 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
     www_apps_path = www_path.joinpath("apps")
     updated = datetime.today()
 
+    repo_url_prefixes = {arch: CONFIG.repo_url_prefix + repo + "/" for repo, arch in zip(repo_info.repos, repo_info.repo_archs())}
+    # noarch does not have a dedicated repository, use the first available arch I suppose
+    # This may be an idea in the category "not smart"
+    repo_url_prefixes["noarch"] = repo_url_prefixes[repo_info.repo_archs()[0]]
+
     sorted_pkgs = sorted([pkg for pkg in repo_info.packages if not pkg.is_debug()], key=lambda pkg: str(pkg.title).lower())
     recently_updated_pkgs = sorted(
         [pkg for pkg in repo_info.packages if pkg.is_app()],
@@ -100,7 +105,7 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
             app_dir = www_apps_path.joinpath(pkg.name)
             os.symlink(pkg_dir.absolute(), app_dir.absolute(), True)
 
-        render_template(pkg_template, str(out_file), pkg=pkg)
+        render_template(pkg_template, str(out_file), pkg=pkg, repo_url_prefixes=repo_url_prefixes)
 
     total_sitegen_steps = 5
     step_progress(sitegen_step, "Creating directory structure", 1, total_sitegen_steps)

@@ -1,8 +1,8 @@
 {% macro package_icon(pkg, class=none) -%}
     <picture {% if class %} class="{{ class }}" {% endif %}>
         <source srcset="{{ pkg.icon.remote_url | fallback_icon }}" />
-        <source srcset="{{ "/static/img/pkg-fallback.png" | to_public_url }}" />
-        <img {% if class %} class="{{ class }}" {% endif %} src="{{ "/static/img/pkg-fallback.png" | to_public_url }}" alt="App icon of {{ pkg.title }}" onerror="loadImageFallback.call(this)">
+        <source srcset="{{ "static/img/pkg-fallback.png" | to_public_url }}" />
+        <img {% if class %} class="{{ class }}" {% endif %} src="{{ "static/img/pkg-fallback.png" | to_public_url }}" alt="App icon of {{ pkg.title }}" onerror="loadImageFallback.call(this)">
     </picture>
 {%- endmacro %}
 

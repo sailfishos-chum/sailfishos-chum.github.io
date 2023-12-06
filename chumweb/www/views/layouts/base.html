@@ -28,6 +28,14 @@
             <p>A Sailfish OS app repository by the community</p>
         </header>
         <nav class="section-site-nav section-secondary sidebar-left">
+            {% block search %}
+                <form is="search-form" action="{{ "search.html" | to_public_url }}" method="GET" class="search-form section-underline" style="padding-bottom: 1em">
+                    <div class="search-bar">
+                        <input type="search" name="q" placeholder="Search query" />
+                        <input type="submit" name="action" value="search" />
+                    </div>
+                </form>
+            {% endblock search %}
             <ul class="section-menu link-list">
                 <li><a href="{{ "index.html" | to_public_url }}">Home</a></li>
                 <li><a href="{{ "about.html" | to_public_url }}">About</a></li>

@@ -1,6 +1,6 @@
 {% macro package_icon(pkg, class=none) -%}
     <picture {% if class %} class="{{ class }}" {% endif %}>
-        <source srcset="{{ pkg.icon.remote_url | fallback_icon }}" />
+        <source srcset="{{ pkg.icon.remote_url if pkg else none | fallback_icon }}" />
         <source srcset="{{ "static/img/pkg-fallback.png" | to_public_url }}" />
         <img {% if class %} class="{{ class }}" {% endif %} src="{{ "static/img/pkg-fallback.png" | to_public_url }}" alt="App icon of {{ pkg.title }}" onerror="loadImageFallback.call(this)">
     </picture>
@@ -13,6 +13,15 @@
         <p class="pkg-summary">{{ pkg.summary }}</p>
         <div class="pkg-version" title="Version {{ pkg.version.to_full_str() }}"> v{{ pkg.version.to_short_str() }}</div>
     </{{container}}>
+{%- endmacro %}
+
+{% macro package_search_result() -%}
+    <div class="pkg-header">
+        <a class="pkg-icon">{{ package_icon(none, "pkg-icon") }}</a>
+        <h2 class="pkg-title"><a class="pkg-title">???</a></h2>
+        <p class="pkg-summary">??? ??? ???</p>
+        <div class="pkg-version" title="Version ?.?.?">v?.?.?</div>
+    </div>
 {%- endmacro %}
 
 {% macro package_item_small(pkg, container="div") -%}

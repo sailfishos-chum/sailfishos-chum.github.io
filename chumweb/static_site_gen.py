@@ -1,6 +1,7 @@
 """
 This module generates the static website
 """
+import json
 import os
 import random
 from urllib.parse import urljoin
@@ -101,7 +102,7 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
 
         render_template(pkg_template, str(out_file), pkg=pkg)
 
-    total_sitegen_steps = 4
+    total_sitegen_steps = 5
     step_progress(sitegen_step, "Creating directory structure", 1, total_sitegen_steps)
     recreate_directory_skeleton()
     copy_static_dirs()
@@ -130,6 +131,9 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
     about_generator = env.get_template("pages/about-generator.html")
     render_template(about_generator, www_path.joinpath("about-generator.html"),
                     pkgs=[pkg for pkg in repo_info.packages if pkg.caused_requests()])
+
+    search_generator = env.get_template("pages/search.html")
+    render_template(search_generator, www_path.joinpath("search.html"))
 
     step_progress(sitegen_step, "Generating package pages", 3, total_sitegen_steps)
 
@@ -184,6 +188,16 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
         template_args["letter_map"] = letter_map
         render_template(pkg_list_template, www_path.joinpath(pkg_list["file"]), **template_args)
 
+    # Generate search index
+    step_progress(sitegen_step, "Generating search index", 5, total_sitegen_steps)
+    search_index, search_documents = create_search_index(sorted_pkgs)
+
+    with open(www_path.joinpath("packages-index.json"), "w") as search_index_file:
+        json.dump(search_index.serialize(), search_index_file)
+
+    with open(www_path.joinpath("packages.json"), "w") as packages_file:
+        json.dump(search_documents, packages_file)
+
 
 def _bytes_filter(size: str) -> str:
     """
@@ -215,6 +229,27 @@ def _bytes_filter(size: str) -> str:
     amount = round(amount, 1)
 
     return f"{amount} {unit}"
+
+
+def create_search_index(pkgs: List[Package]):
+    """
+    Generates a search index that can be used in the front-end with the Lunr library
+    :param pkgs:
+    :return:
+    """
+    import lunr
+    documents = [pkg.to_search_dict() for pkg in pkgs]
+    index = lunr.lunr(
+        ref="name",
+        fields=(
+            {"field_name": "name", "boost": 5},
+            {"field_name": "title", "boost": 3},
+            {"field_name": "summary", "boost": 2},
+            {"field_name": "description", "boost": 1}
+        ),
+        documents=documents
+    )
+    return index, documents
 
 
 @pass_eval_context

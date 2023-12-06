@@ -256,12 +256,26 @@ class Package:
         Returns the url for use in the web interface
         """
         if self.is_app():
-            return f"apps/{self.name}"
+            return f"apps/{self.name}/"
         else:
-            return f"pkgs/{self.name}"
+            return f"pkgs/{self.name}/"
 
     def caused_requests(self):
         return type(self.markdown_url) == str
 
     def requested_urls(self):
         return [self.markdown_url]
+
+    def to_search_dict(self):
+        return {
+            "name": self.name,
+            "title": self.title,
+            "url": self.web_url(),
+            "icon": self.icon.remote_url if self.icon else None,
+            "summary": self.summary,
+            "description": self.description,
+            "version": self.version.to_full_str(),
+            "version_short": self.version.to_short_str(),
+            "is_app": self.is_app(),
+            "is_debug": self.is_debug()
+        }

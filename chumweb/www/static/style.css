@@ -73,7 +73,7 @@ header > h1, header > p, header > h2, .pkg-header > h2, .pkg-header p {
     margin-bottom: 0;
 }
 
-header, header:not(.section-site-info){
+header, header:not(.section-site-info), .section-underline{
     padding: 0.5em 0;
     border-bottom: 2px dashed var(--color-fg);
     margin-bottom: 0.5em;
@@ -237,6 +237,51 @@ dl dd {
 
 .pkg-letter-links .pkg-active-letter {
     text-decoration: underline;
+}
+
+/** Search form */
+input[type=search] {
+    padding: 0.25em;
+    border: solid 1px var(--color-fg);
+}
+
+input[type=search]:focus {
+    border: solid 1px var(--color-fg-highlight-primary);
+    outline: solid 3px var(--color-fg-highlight-primary);
+}
+
+input[type=submit] {
+    background-color: var(--color-fg-highlight-primary);
+    border: solid 2px var(--color-fg-highlight-primary);
+    border-bottom-color: var(--color-fg-highlight-secondary);
+    border-right-color: var(--color-fg-highlight-secondary);
+    color: var(--color-fg-alt);
+    text-transform: capitalize;
+}
+
+input[type=submit]:focus{
+    border: solid 2px var(--color-fg-highlight-secondary);
+    outline: solid 2px var(--color-fg-highlight-secondary);
+}
+
+input[type=submit]:active {
+    background-color: var(--color-fg-highlight-secondary);
+    border: solid 2px var(--color-fg-highlight-secondary);
+}
+
+.search-bar {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+.search-bar > input[type=search] {
+    flex-grow: 1;
+    min-width: 50px;
+}
+
+.search-bar > input[type=search]:focus ~ input[type=submit] {
+    outline: solid 3px var(--color-fg-highlight-primary);
 }
 
 /** Architecture selectors */

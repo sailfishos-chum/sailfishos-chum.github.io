@@ -1,9 +1,11 @@
 """
 This module generates the static website
 """
+import dataclasses
 import json
 import os
 import random
+from dataclasses import dataclass
 from urllib.parse import urljoin
 
 from jinja2 import Environment, PackageLoader, Template, select_autoescape, pass_eval_context
@@ -11,11 +13,11 @@ from jinja2.nodes import EvalContext
 from markupsafe import Markup
 from os import makedirs, mkdir
 from pathlib import Path
-from shutil import copy2, rmtree
-from typing import List, Dict
+from shutil import rmtree
+from typing import List, Dict, Tuple, Set
 
 from . import CONFIG
-from .package import Package
+from .package import Package, PackageApplicationCategory
 
 from datetime import datetime
 import importlib.resources as resources
@@ -24,6 +26,50 @@ from .progress import begin_step, step_progress
 from .repo_loader import RepoInfo
 
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+
+
+@dataclass
+class PackageIndex:
+    id: str
+    display: str
+    page_title: str
+    file: str
+    pkgs: List[Package]
+
+    def as_dict(self):
+        # dataclasses.asdict() converts the pkgs to dicts as well, which is not what I want, hence the hand-typed version
+        return {
+            "id": self.id,
+            "display": self.display,
+            "page_title": self.page_title,
+            "file": self.file,
+            "pkgs": self.pkgs
+        }
+
+
+@dataclass
+class CategoryPage:
+    name: str
+    categories: Set[str]
+
+    def __hash__(self):
+        return self.name.__hash__()
+
+
+CATEGORY_PAGES = [
+    CategoryPage("Accessibility", {PackageApplicationCategory.accessibility}),
+    CategoryPage("Development", {PackageApplicationCategory.development}),
+    CategoryPage("Education", {PackageApplicationCategory.education}),
+    CategoryPage("Games", {PackageApplicationCategory.game}),
+    CategoryPage("Graphics", {PackageApplicationCategory.graphics}),
+    CategoryPage("Libraries", {PackageApplicationCategory.library}),
+    CategoryPage("Location and Navigation", {PackageApplicationCategory.maps}),
+    CategoryPage("Multimedia", {PackageApplicationCategory.audio, PackageApplicationCategory.video, PackageApplicationCategory.audio_video}),
+    CategoryPage("Office", {PackageApplicationCategory.office}),
+    CategoryPage("Science", {PackageApplicationCategory.science}),
+    CategoryPage("Utilities", {PackageApplicationCategory.system, PackageApplicationCategory.utility}),
+    CategoryPage("Other", {PackageApplicationCategory.other}),
+]
 
 
 def gen_site(repo_info: RepoInfo, out_dir: Path):
@@ -37,13 +83,16 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
     www_pkgs_path = www_path.joinpath("pkgs")
     www_apps_path = www_path.joinpath("apps")
     updated = datetime.today()
+    pkg_filters = ["pkgs", "apps"]
 
-    repo_url_prefixes = {arch: CONFIG.repo_url_prefix + repo + "/" for repo, arch in zip(repo_info.repos, repo_info.repo_archs())}
+    repo_url_prefixes = {arch: CONFIG.repo_url_prefix + repo + "/" for repo, arch in
+                         zip(repo_info.repos, repo_info.repo_archs())}
     # noarch does not have a dedicated repository, use the first available arch I suppose
     # This may be an idea in the category "not smart"
     repo_url_prefixes["noarch"] = repo_url_prefixes[repo_info.repo_archs()[0]]
 
-    sorted_pkgs = sorted([pkg for pkg in repo_info.packages if not pkg.is_debug()], key=lambda pkg: str(pkg.title).lower())
+    sorted_pkgs = sorted([pkg for pkg in repo_info.packages if not pkg.is_debug()],
+                         key=lambda pkg: str(pkg.title).lower())
     recently_updated_pkgs = sorted(
         [pkg for pkg in repo_info.packages if pkg.is_app()],
         reverse=True, key=lambda pkg: pkg.updated
@@ -80,9 +129,7 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
         makedirs(www_apps_path)
         makedirs(www_pkgs_path)
 
-
-
-    def pkgs_buckets() -> Dict[str, List[Package]]:
+    def pkgs_letter_buckets() -> Dict[str, List[Package]]:
         dict: Dict[str, List[Package]] = {}
         for letter in ALPHABET + "?":
             dict[letter] = []
@@ -94,6 +141,104 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
             else:
                 dict["?"].append(pkg)
         return dict
+
+    def pkg_letter_indexes() -> Tuple[List[PackageIndex], List[PackageIndex]]:
+        pkgs_by_letter = pkgs_letter_buckets()
+        app_lists = []
+        pkg_lists = []
+
+        for pkg_filter in pkg_filters:
+            for letter in ALPHABET + "?":
+                if pkg_filter == "apps":
+                    filtered_pkg_list = filter(lambda pkg: pkg.is_app(), pkgs_by_letter[letter])
+                    filter_name = "apps"
+                else:
+                    filtered_pkg_list = pkgs_by_letter[letter]
+                    filter_name = "packages"
+
+                other = "other"
+                disp = f"'{letter.upper()}'" if letter.isalpha() else "other characters"
+                pkg_index = PackageIndex(
+                    letter,
+                    letter.upper(),
+                    f"All {filter_name} starting with {disp}",
+                    f"{pkg_filter}/index-{letter if letter.isalpha() else other}.html",
+                    filtered_pkg_list
+                )
+
+                if pkg_filter == "apps":
+                    app_lists.append(pkg_index)
+                else:
+                    pkg_lists.append(pkg_index)
+
+        app_lists.append(
+            PackageIndex(
+                "*",
+                "ALL",
+                "All apps",
+                "apps/index.html",
+                filter(lambda pkg: pkg.is_app(), sorted_pkgs)
+            )
+        )
+
+        pkg_lists.append(
+            PackageIndex(
+                "*",
+                "ALL",
+                "All packages",
+                "pkgs/index.html",
+                sorted_pkgs
+            )
+        )
+
+        return pkg_lists, app_lists
+
+    def pkgs_category_buckets() -> Dict[PackageApplicationCategory, List[Package]]:
+        dict: Dict[PackageApplicationCategory, List[Package]] = {}
+        for category in CATEGORY_PAGES:
+            dict[category] = [pkg for pkg in sorted_pkgs if len(category.categories.intersection(pkg.categories))]
+        return dict
+
+    def pkg_category_indexes() -> Tuple[List[PackageIndex], List[PackageIndex]]:
+        pkgs_by_category = pkgs_category_buckets()
+        pkg_lists = []
+        app_lists = []
+
+        for pkg_filter in pkg_filters:
+            for category in CATEGORY_PAGES:
+
+                if category.name == "Libraries" and pkg_filter == "apps":
+                    # This does not make sense to display, libraries aren't apps by definition
+                    continue
+
+                if pkg_filter == "apps":
+                    filtered_pkg_list = filter(lambda pkg: pkg.is_app(), pkgs_by_category[category])
+                    filter_name = "apps"
+                else:
+                    filtered_pkg_list = pkgs_by_category[category]
+                    filter_name = "packages"
+
+                pkg_index = PackageIndex(
+                    category.name.lower(),
+                    category.name,
+                    f"All {category.name.lower()} {filter_name}",
+                    f"{pkg_filter}/index-category-{category.name.replace(' ', '-').lower()}.html",
+                    filtered_pkg_list
+                )
+
+                if pkg_filter == "apps":
+                    app_lists.append(pkg_index)
+                else:
+                    pkg_lists.append(pkg_index)
+
+        return pkg_lists, app_lists
+
+    def create_package_index_pages(index_list: List[PackageIndex]):
+        for index in index_list:
+            pkg_index_template = env.get_template("pages/package-index.html")
+            pkg_index_template_args = index.as_dict()
+            pkg_index_template_args["index_list"] = index_list
+            render_template(pkg_index_template, www_path.joinpath(index.file), **pkg_index_template_args)
 
     def create_package_page(pkg: Package):
         pkg_template = env.get_template("pages/package.html")
@@ -112,7 +257,6 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
     recreate_directory_skeleton()
     copy_static_dirs()
 
-    pkgs_by_letter = pkgs_buckets()
 
     env = Environment(
         loader=PackageLoader(__package__ + ".www", "views"),
@@ -145,53 +289,9 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
     for pkg in repo_info.packages:
         create_package_page(pkg)
 
-    letter_map = {l: {"display": l.upper(), "file": f"-{l}"} for l in ALPHABET}
-    letter_map["?"] = {"display": "?", "file": "-other"}
-    letter_map["*"] = {"display": "ALL", "file": ""}
-
-    pkg_lists = [
-        {
-            "name": "All apps",
-            "file": "apps/index.html",
-            "pkgs": filter(lambda pkg: pkg.is_app(), sorted_pkgs),
-            "current_letter": "*",
-            "current_filter": "apps"
-        },
-        {
-            "name": "All packages",
-            "file": "pkgs/index.html",
-            "pkgs": sorted_pkgs,
-            "current_letter": "*",
-            "current_filter": "pkgs"
-        },
-    ]
-
-    pkg_filters = ["pkgs", "apps"]
-    for pkg_filter in pkg_filters:
-        for letter in ALPHABET + "?":
-            if pkg_filter == "apps":
-                filtered_pkg_list = filter(lambda pkg: pkg.is_app(), pkgs_by_letter[letter])
-                filter_name = "apps"
-            else:
-                filtered_pkg_list = pkgs_by_letter[letter]
-                filter_name = "packages"
-
-            other = "other"
-            disp = f"'{letter.upper()}'" if letter.isalpha() else "other characters"
-            pkg_lists.append({
-                "name": f"All {filter_name} starting with {disp}",
-                "file": f"{pkg_filter}/index-{letter if letter.isalpha() else other}.html",
-                "pkgs": filtered_pkg_list,
-                "current_letter": letter,
-                "current_filter": pkg_filter
-            })
-
     step_progress(sitegen_step, "Generating package lists", 4, total_sitegen_steps)
-    for pkg_list in pkg_lists:
-        pkg_list_template = env.get_template("pages/package-index.html")
-        template_args = pkg_list
-        template_args["letter_map"] = letter_map
-        render_template(pkg_list_template, www_path.joinpath(pkg_list["file"]), **template_args)
+    for idx in pkg_letter_indexes() + pkg_category_indexes():
+        create_package_index_pages(idx)
 
     # Generate search index
     step_progress(sitegen_step, "Generating search index", 5, total_sitegen_steps)

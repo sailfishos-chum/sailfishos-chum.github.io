@@ -17,20 +17,23 @@ class PackageApplicationCategory(StrEnum):
     """
     Desktop application categories, from https://specifications.freedesktop.org/menu-spec/latest/apa.html
     """
-    other = "Other"
+    accessibility = "Accessibility"  # Added by Chum?
     audio_video = "AudioVideo"
-    audio = "audio"
-    video = "video"
+    audio = "Audio"
+    video = "Video"
     development = "Development"
     education = "Education"
     game = "Game"
     graphics = "Graphics"
+    library = "Library"  # Added by Chum?
+    maps = "Maps"  # Added by Chum?
     network = "Network"
     office = "Office"
     science = "Science"
     settings = "Settings"
     system = "System"
     utility = "Utility"
+    other = "Other"
 
 
 class PackageApplicationType(StrEnum):
@@ -80,7 +83,7 @@ class Package:
     developer_name: str | None = None
     packager_name: str | None = None
     type: PackageApplicationType = PackageApplicationType.generic
-    categories: List[PackageApplicationCategory] = field(default_factory=lambda: [PackageApplicationCategory.other])
+    categories: Set[PackageApplicationCategory] = field(default_factory=lambda: {PackageApplicationCategory.other})
     screenshots: List[RemoteImage] = field(default_factory=list)
     links: Dict[str, str] = field(default_factory=dict)
     debuginfo_package: Self | None = None
@@ -153,7 +156,7 @@ class Package:
             # Based on
             # https://github.com/sailfishos-chum/sailfishos-chum-gui/blob/0b2882fad79673b762ca184cd242d02334f1d8d1/src/chumpackage.cpp#L152C1-L152C108
             # Metadata, in YAML format, is put as the last paragraph of the application description. Paragraphs are
-            # split by tww newlines.
+            # split by two newlines.
             paragraphs = [line for line in re.split(r"(?m)^\s*$", description) if line.strip()]
             if not paragraphs:
                 return
@@ -198,7 +201,7 @@ class Package:
                     p.debug_yaml_errors.append(e)
 
                 try:
-                    p.categories = list(map(PackageApplicationCategory, yaml["Categories"]))
+                    p.categories = set(map(PackageApplicationCategory, yaml["Categories"]))
                 except (KeyError, ValueError) as e:
                     p.debug_yaml_errors.append(e)
 

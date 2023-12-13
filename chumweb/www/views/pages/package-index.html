@@ -1,19 +1,19 @@
 {% extends "layouts/base.html" %}
-{% block title %} {{ name }} — {{ super() }}{% endblock %}
+{% block title %} {{ page_title }} — {{ super() }}{% endblock %}
 {% block meta %} {{ meta.open_graph_site(name, "/") }} {% endblock meta %}
 {% import "parts/package-item.html" as package_item %}
 
 {% block main %}
 <header>
-    <h1>{{ name }}</h1>
+    <h1>{{ page_title }}</h1>
 </header>
 <div class="pkg-letter-links">
     [
-    {%  for letter in "abcdefghijklmnopqrstuvwxyz?*" %}
-        {% if current_letter and letter == current_letter %}
-            <span class="pkg-active-letter"> {{ letter_map[letter].display }}</span>
+    {%  for index in index_list %}
+        {% if id and index.id == id %}
+            <span class="pkg-active-letter"> {{ index.display }}</span>
         {% else %}
-            <a href="{{ "%s/index%s.html" | format(current_filter, letter_map[letter].file) | to_public_url }}">{{ letter_map[letter].display }}</a>
+            <a href="{{ index.file | to_public_url }}">{{ index.display }}</a>
         {% endif %}
     {% endfor %}
     ]
@@ -22,7 +22,7 @@
     {% for pkg in pkgs %}
         {{ package_item.package_item(pkg, "li") }}
     {% else %}
-        <p>No featured apps</p>
+        <p>No apps found with the given filters</p>
     {% endfor %}
 </ul>
 {% endblock main %}

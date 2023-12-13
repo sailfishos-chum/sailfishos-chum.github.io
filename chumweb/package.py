@@ -1,5 +1,5 @@
 """
-Data classes for package metadata
+Data classes for package metadata. It is also responsible for parsing the metadate of a single package
 """
 from dataclasses import dataclass, field
 import enum

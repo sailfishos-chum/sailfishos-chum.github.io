@@ -1,6 +1,8 @@
 # chum-web
 Static website generator to generate a website for [Chum](https://github.com/sailfishos-chum/), a Sailfish OS community repository.
 
+For an overview of how this project is structured, see [ARCHITECTURE.md](ARCHITECTURE.md)
+
 ## Running
 In general, run it as `python -m chumweb`. It will output the generated website to "out/www/",
 unless another `out` directory has been specified.

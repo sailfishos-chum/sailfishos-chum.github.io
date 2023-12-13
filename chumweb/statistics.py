@@ -1,3 +1,8 @@
+"""
+Writes a statistics report to a MarkDown file
+
+This is used for GitHub's Job Summary feature.
+"""
 from typing import Tuple, List, TextIO
 
 from chumweb import CONFIG
@@ -41,6 +46,7 @@ class MarkdownWriter:
         self.out.write("|" + "|".join(["---"] * len(header)) + "|\n")
         for row in rows:
             self.out.write("| " + " | ".join(row) + " |\n")
+        self.out.write("\n")
 
     def write_list(self, items: List[str]):
         for item in items:

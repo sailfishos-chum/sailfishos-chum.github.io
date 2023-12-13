@@ -229,6 +229,9 @@ class Package:
             p.description = try_get_str("description")
             p.debug_yaml_errors.append(e)
 
+        if p.name.startswith("lib") and PackageApplicationCategory.library not in p.categories:
+            p.categories.add(PackageApplicationCategory.library)
+
         return p
 
     def merge_arch(self, other_pkg: Self):

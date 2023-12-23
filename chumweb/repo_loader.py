@@ -115,7 +115,7 @@ def load_repo(obs_url: str, obs_project: str, obs_auth: Tuple[str, str], repo_ur
     for data_path, repo_name in zip(data_paths, repos):
         step_progress(parse_step, repo_name, i, repo_count)
         arch = repo_name.split("_")[1]
-        all_pkgs[arch] = read_repo_data(urljoin(repo_url, repo_name), data_path)
+        all_pkgs[arch] = read_repo_data(urljoin(repo_url, repo_name), data_path, repo_name)
         link_debug_packages(all_pkgs[arch])
         i += 1
 
@@ -171,7 +171,7 @@ def save_repo_data(repo_url: str, repo_name: str, out_dir: Path):
     return primary_gz_path
 
 
-def read_repo_data(repo_url, repo_info: Path) -> List[Package]:
+def read_repo_data(repo_url, repo_info: Path, repo_name: str) -> List[Package]:
     """
     Reads all package data from a `primary.xml.gz` file
     """
@@ -179,7 +179,7 @@ def read_repo_data(repo_url, repo_info: Path) -> List[Package]:
     with GzipFile(repo_info) as gz:
         xml = minidom.parse(gz)
         for xmlPkg in xml.getElementsByTagName("package"):
-            pkgs.append(Package.from_node(xmlPkg))
+            pkgs.append(Package.from_node(xmlPkg, repo_name))
 
     return pkgs
 

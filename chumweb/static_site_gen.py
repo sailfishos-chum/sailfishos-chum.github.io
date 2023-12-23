@@ -17,6 +17,7 @@ from shutil import rmtree
 from typing import List, Dict, Tuple, Set
 
 from . import CONFIG
+from .atom_feed import create_package_atom_feed
 from .package import Package, PackageApplicationCategory
 
 from datetime import datetime
@@ -56,6 +57,17 @@ class CategoryPage:
         return self.name.__hash__()
 
 
+@dataclass
+class Feed:
+    title: str
+    path: str
+    pkgs: List[Package]
+
+    def __getattr__(self, item):
+        if item == "url":
+            return CONFIG.public_url + self.path
+
+
 CATEGORY_PAGES = [
     CategoryPage("Accessibility", {PackageApplicationCategory.accessibility}),
     CategoryPage("Development", {PackageApplicationCategory.development}),
@@ -64,7 +76,8 @@ CATEGORY_PAGES = [
     CategoryPage("Graphics", {PackageApplicationCategory.graphics}),
     CategoryPage("Libraries", {PackageApplicationCategory.library}),
     CategoryPage("Location and Navigation", {PackageApplicationCategory.maps}),
-    CategoryPage("Multimedia", {PackageApplicationCategory.audio, PackageApplicationCategory.video, PackageApplicationCategory.audio_video}),
+    CategoryPage("Multimedia", {PackageApplicationCategory.audio, PackageApplicationCategory.video,
+                                PackageApplicationCategory.audio_video}),
     CategoryPage("Office", {PackageApplicationCategory.office}),
     CategoryPage("Science", {PackageApplicationCategory.science}),
     CategoryPage("Utilities", {PackageApplicationCategory.system, PackageApplicationCategory.utility}),
@@ -85,25 +98,28 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
     updated = datetime.today()
     pkg_filters = ["pkgs", "apps"]
 
-    repo_url_prefixes = {arch: CONFIG.repo_url_prefix + repo + "/" for repo, arch in
-                         zip(repo_info.repos, repo_info.repo_archs())}
-    # noarch does not have a dedicated repository, use the first available arch I suppose
-    # This may be an idea in the category "not smart"
-    repo_url_prefixes["noarch"] = repo_url_prefixes[repo_info.repo_archs()[0]]
-
     sorted_pkgs = sorted([pkg for pkg in repo_info.packages if not pkg.is_debug()],
                          key=lambda pkg: str(pkg.title).lower())
-    recently_updated_pkgs = sorted(
+    recently_updated_apps = sorted(
         [pkg for pkg in repo_info.packages if pkg.is_app()],
         reverse=True, key=lambda pkg: pkg.updated
-    )[:CONFIG.updated_apps_count]
+    )
+    recently_updated_pkgs = sorted(
+        [pkg for pkg in repo_info.packages if not pkg.is_debug()],
+        reverse=True, key=lambda pkg: pkg.updated
+    )
+    feeds = [
+        Feed("Recently updated apps", "apps/updates.atom", recently_updated_apps),
+        Feed("Recently updated packages", "pkgs/updates.atom", recently_updated_pkgs)
+    ]
 
     def render_template(template: Template, out_file: str | Path, **kwargs):
         kwargs["updated"] = updated
         kwargs["chum_installer"] = "sailfishos-chum-gui-installer"
         kwargs["config"] = CONFIG
         kwargs["repo_version"] = repo_info.version
-        kwargs["recently_updated_pkgs"] = recently_updated_pkgs
+        kwargs["recently_updated_pkgs"] = recently_updated_pkgs[:CONFIG.updated_apps_count]
+        kwargs["feeds"] = feeds
         template.stream(**kwargs).dump(str(out_file))
 
     def _copy_dir(source, dest: Path):
@@ -250,13 +266,12 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
             app_dir = www_apps_path.joinpath(pkg.name)
             os.symlink(pkg_dir.absolute(), app_dir.absolute(), True)
 
-        render_template(pkg_template, str(out_file), pkg=pkg, repo_url_prefixes=repo_url_prefixes)
+        render_template(pkg_template, str(out_file), pkg=pkg)
 
     total_sitegen_steps = 5
     step_progress(sitegen_step, "Creating directory structure", 1, total_sitegen_steps)
     recreate_directory_skeleton()
     copy_static_dirs()
-
 
     env = Environment(
         loader=PackageLoader(__package__ + ".www", "views"),
@@ -303,10 +318,16 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
     with open(www_path.joinpath("packages.json"), "w") as packages_file:
         json.dump(search_documents, packages_file)
 
+    # Write Atom feeds
+    for feed in feeds:
+        xml = create_package_atom_feed(feed.pkgs[:CONFIG.feed_updated_apps_count], feed.url, feed.title)
+        with open(www_path.joinpath(feed.path), "w") as atom_file:
+            xml.writexml(atom_file)
+
 
 def _bytes_filter(size: str) -> str:
     """
-    Converts `size` in bytes to a human readable unit, such as KiB, MiB and GiB
+    Converts `size` in bytes to a human-readable unit, such as KiB, MiB and GiB
     """
     from math import log2
 

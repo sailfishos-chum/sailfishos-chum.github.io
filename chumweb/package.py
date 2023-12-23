@@ -1,17 +1,20 @@
 """
 Data classes for package metadata. It is also responsible for parsing the metadate of a single package
 """
+import logging
 from dataclasses import dataclass, field
 import enum
-from datetime import datetime
+from datetime import datetime, UTC
 from enum import StrEnum
 from types import NoneType
-from typing import List, Dict, Self, Set
+from typing import List, Dict, Self, Set, Optional
 
 from markupsafe import Markup
 
+from . import CONFIG
 from .remote_image import RemoteImage
 
+logger = logging.getLogger(__name__)
 
 class PackageApplicationCategory(StrEnum):
     """
@@ -97,6 +100,7 @@ class Package:
     debug_yaml_errors: List[Exception] = field(default_factory=list)
     updated: datetime | None = field(default_factory=lambda: datetime.fromtimestamp(0))
 
+    repos: Set[str] = field(default_factory=set)
     archs: Set[str] = field(default_factory=set)
     download_size: Dict[str, int] = field(default_factory=dict)
     install_size: Dict[str, int] = field(default_factory=dict)
@@ -105,7 +109,7 @@ class Package:
     checksum_value: Dict[str, str] = field(default_factory=dict)
 
     @staticmethod
-    def from_node(dom_element):
+    def from_node(dom_element, repo_arch: str):
         """
         Creates a Package class instance from a `<package>` XML node `dom_element` as found in the primary.xml
         metadata in RPM repositories.
@@ -210,13 +214,14 @@ class Package:
         arch = try_get_str("arch")
 
         p = Package(try_get_str("name"))
+        p.repos.add(repo_arch)
         p.archs.add(arch)
         p.summary = try_get_str("summary")
         p.version = try_get_version()
         p.url = try_get_str("url")
         p.title = name_to_title(p.name)
         p.licence = try_get_str("rpm:license")
-        p.updated = datetime.fromtimestamp(float(try_get_attribute_tags("time", "file")[0]))
+        p.updated = datetime.fromtimestamp(float(try_get_attribute_tags("time", "file")[0]), UTC)
 
         p.download_size[arch], p.install_size[arch] = try_get_attribute_tags("size", "package", "installed")
         p.download_url[arch] = try_get_attribute_tags("location", "href")[0]
@@ -239,6 +244,7 @@ class Package:
         Adds the architecture-specific information from another package to this package
         """
         for arch in other_pkg.archs:
+            self.repos = self.repos.union(other_pkg.repos)
             self.download_size[arch] = other_pkg.download_size[arch]
             self.install_size[arch] = other_pkg.install_size[arch]
             self.download_url[arch] = other_pkg.download_url[arch]
@@ -265,6 +271,24 @@ class Package:
             return f"apps/{self.name}/"
         else:
             return f"pkgs/{self.name}/"
+
+    def get_download_url(self, arch: str) -> Optional[str]:
+        # noarch does not have a dedicated repository, use the first available arch I suppose
+        # This may be an idea in the category "not smart"
+        if arch == "noarch":
+            repo = next(self.repos.__iter__())
+        else:
+            for repo in self.repos:
+                repo_arch = repo.split("_")[1]
+                if repo_arch == arch:
+                    break
+            else:
+                logger.warning(f"No repo found for architecture {arch} (package: {self.name})")
+                #assert False, f"No repo found for architecture {arch} (package: {self.name})"
+                return None
+
+        return f"{CONFIG.repo_url_prefix}{repo}/" + self.download_url[arch]
+
 
     def caused_requests(self):
         return type(self.markdown_url) == str

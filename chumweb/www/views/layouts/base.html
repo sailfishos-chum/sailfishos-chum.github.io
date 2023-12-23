@@ -15,6 +15,9 @@
         {% endblock header %}
         <script src="{{ "static/fallback-image.js" | to_public_url }}"></script>
         <script src="{{ "static/user-preferences.js" | to_public_url }}"></script>
+        {% for feed in feeds %}
+            <link href="{{ feed.url }}" rel="alternate" title="{{ feed.title }}" type="application/atom+xml" />
+        {% endfor %}
     </head>
     <body>
         <header class="section-site-info section-secondary">

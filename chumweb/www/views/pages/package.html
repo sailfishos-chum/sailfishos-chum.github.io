@@ -56,7 +56,7 @@
                 {% endif %}
                         <ul class="link-list">
                         {% for arch, url in pkg.download_url | dictsort %}
-                            <li><a href="{{ repo_url_prefixes[arch] }}{{ url }}" class="pkg-download-{{ arch }}">{{ pkg.name }}-{{ arch }}.rpm ({{ pkg.download_size[arch] | bytes }})</a></li>
+                            <li><a href="{{ pkg.get_download_url(arch) }}" class="pkg-download-{{ arch }}">{{ pkg.name }}-{{ arch }}.rpm ({{ pkg.download_size[arch] | bytes }})</a></li>
                         {% endfor %}
                         </ul>
             {% if pkg.name not in config.chum_installer_pkgs %}

@@ -48,8 +48,12 @@ class Config:
     repo_data_dir: str | None = None
     user_agent: str = "chumweb/1.0"
     source_code_url: str = ""
+    # The amount of featured apps to show on the home page
     featured_apps_count = 10
+    # The amount of updated apps to show in the sidebar
     updated_apps_count = 6
+    # The amount of updated apps to put in the Atom feed
+    feed_updated_apps_count = 20
 
 
 def init_config() -> Config:

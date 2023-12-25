@@ -28,6 +28,9 @@ sequenceDiagram
 #### [chumweb/\_\_main\_\_.py](chumweb/__main__.py)
 Contains the main function.
 
+#### [chumweb/atom_feed.py](chumweb/atom_feed.py)
+Contains functions for creating Atom feeds.
+
 #### [chumweb/config.py](chumweb/config.py)
 Contains the definitions of all settings that can be set via environment variables
 or command line options.

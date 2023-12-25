@@ -1,7 +1,6 @@
 """
 This module generates the static website
 """
-import dataclasses
 import json
 import os
 import random
@@ -118,7 +117,7 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
         kwargs["chum_installer"] = "sailfishos-chum-gui-installer"
         kwargs["config"] = CONFIG
         kwargs["repo_version"] = repo_info.version
-        kwargs["recently_updated_pkgs"] = recently_updated_pkgs[:CONFIG.updated_apps_count]
+        kwargs["recently_updated_pkgs"] = recently_updated_apps[:CONFIG.updated_apps_count]
         kwargs["feeds"] = feeds
         template.stream(**kwargs).dump(str(out_file))
 
@@ -268,7 +267,7 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
 
         render_template(pkg_template, str(out_file), pkg=pkg)
 
-    total_sitegen_steps = 5
+    total_sitegen_steps = 6
     step_progress(sitegen_step, "Creating directory structure", 1, total_sitegen_steps)
     recreate_directory_skeleton()
     copy_static_dirs()
@@ -319,6 +318,7 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
         json.dump(search_documents, packages_file)
 
     # Write Atom feeds
+    step_progress(sitegen_step, "Generating atom feeds", 6, total_sitegen_steps)
     for feed in feeds:
         xml = create_package_atom_feed(feed.pkgs[:CONFIG.feed_updated_apps_count], feed.url, feed.title)
         with open(www_path.joinpath(feed.path), "w") as atom_file:

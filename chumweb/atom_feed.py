@@ -5,6 +5,8 @@ from datetime import datetime
 from typing import List, Optional, Iterable
 from xml.dom.minidom import Document, Element
 
+from markupsafe import Markup
+
 from chumweb import CONFIG
 from chumweb.package import Package
 
@@ -138,7 +140,7 @@ def _create_pkg_entry(doc: Document, pkg: Package) -> Element:
     return entry
 
 
-def _create_simple_element(doc: Document, tag_name: str, content: Optional[str | Element | Iterable[Element]] = None,
+def _create_simple_element(doc: Document, tag_name: str, content: Optional[str | Markup | Element | Iterable[Element]] = None,
                            ns: Optional[str] = None, **attrs) -> Element:
     """
     Creates a XML tag with the given tag name, children and attributes
@@ -157,6 +159,8 @@ def _create_simple_element(doc: Document, tag_name: str, content: Optional[str |
         pass
     elif type(content) is str:
         el.appendChild(doc.createTextNode(content))
+    elif type(content) is Markup:
+        el.appendChild(doc.createTextNode(content.unescape()))
     elif type(content) is Element:
         el.appendChild(content)
     elif type(content) is Iterable[Element]:

@@ -23,8 +23,8 @@ The full list of options can be found in [chumweb/config.py](chumweb/config.py).
 * `out=<path>`: change the output directory. Default: `out/`
 * `debug=<bool>`: Enable debug output on the websites, such as package metadata on package sites.  Default: `false`
 * `public_url=<str>`: The URL the generated website should be publicly available on.  Used to generate canonical URLs etc.
-* `download_extra_metadata=<bool>`: Whether to download extra metadata from external sites, referenced by OBS metadata.  Default: `true`
-  * This will cause site generation to take longer, so for some development tasks set this to `false`. ☺
+* `download_extra_metadata=<bool>`: Whether to download extra metadata from external sites, referenced by OBS metadata.  Default: `false`
+  * This will cause site generation to take longer, so for some development tasks keep this set to `false`. ☺
 * `repo_data_dir=<path>`: Directory with `{arch}-primary.xml.gz` files downloaded from an earlier run. 
   * You can set this to the value of `out/` to avoid downloading the repo each run while developing.
 

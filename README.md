@@ -4,8 +4,8 @@ Static website generator to generate a website for [SailfishOS:Chum](https://git
 For an overview of how this project is structured, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Running
-In general, run it as `python -m chumweb`.  It will output the generated website to `out/www/`,
-unless another directory has been specified by the option `out`.
+In general, run it as `python -m chumweb`.  It will output the generated website to a subdirectory `www/` of the
+directory specified by the option `out`, i.e. `out/www/` by default (if the option `out` has not been explicitly set).
 
 Options can be specified on the command line in the form of `--option-name value` or
 as an environment variable in the form of `CHUM_OPTION_NAME=value`.

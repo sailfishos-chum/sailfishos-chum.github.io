@@ -26,7 +26,7 @@
     <ul>
         {% for pkg in pkgs %}
             <li>
-                <a href="{{ pkg.web_url() }}">{{ pkg.name }}</a>
+                <b><a href="{{ pkg.web_url() }}">{{ pkg.name }}</a></b>
                 <ul>
                     {% for url in pkg.requested_urls() %}
                         <li><a href="{{ url }}">{{ url }}</a></li>

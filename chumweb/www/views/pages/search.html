@@ -22,28 +22,28 @@
             <input type="submit" name="action" value="search" />
         </div>
         <details style="padding-top: 0.5em;">
-            <summary><strong>Advanced search tips</strong></summary>
+            <summary><strong>Advanced search</strong></summary>
             <ul>
-                <li>The search engine searches through the app package <code>name</code>, <code>title</code>, <code>summary</code>
-                    and <code>description</code> at once. If you want to restrict a word to, for example, only the description,
-                    prefix it with <code>description:&lt;search_term_here&gt;</code>
+                <li>The search engine matches the search term against the software packages' <code>name</code>, <code>title</code>,
+                    <code>summary</code> and <code>description</code> simultaneously.  To restrict a search term to, for example,
+                    only the description, prefix it with <code>description:&lt;search_term_here&gt;</code>.
                 </li>
                 <li>
-                    You can use asteriks (<code>*</code>) to search for apps with keywords starting (<code>key*</code>),
-                    ending (<code>*word</code>) or starting and ending (<code>ke*ord</code>) a given term.
+                    Use asterisks (<code>*</code>) to search for software with keywords starting (<code>key*</code>),
+                    ending (<code>*word</code>) or starting and ending (<code>ke*ord</code>) a term.
                 </li>
                 <li>
-                    You can exclude a term by prefixing it with a minus: <code>-example</code>
+                    A term is excluded by prefixing it with a minus: <code>-example</code>
                 </li>
                 <li>
-                    You can force a term to be included by prefixing it with a plus: <code>+example</code>
+                    To force a term to be included, prefix it with a plus: <code>+example</code>
                 </li>
             </ul>
         </details>
     </form>
-    <noscript>JavaScript must be enabled for search to work</noscript>
-    <p id="search-results-no-query">Use the search bar above to enter a query</p>
-    <p id="search-results-empty" style="display: none">No search results found</p>
+    <noscript>JavaScript is required for the search engine to work.</noscript>
+    <p id="search-results-no-query">Use the search bar above to enter a query.</p>
+    <p id="search-results-empty" style="display: none">No search results found!</p>
     <p id="search-results-busy" style="display: none">Searching…</p>
     <div id="search-results" class="app-list">
     </div>

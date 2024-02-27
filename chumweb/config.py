@@ -47,7 +47,7 @@ class Config:
     # Directory with {arch}-primary.xml.gz files downloaded from an earlier run.
     repo_data_dir: str | None = None
     user_agent: str = "chumweb/1.0"
-    source_code_url: str = ""
+    source_code_url: str = "https://github.com/sailfishos-chum/sailfishos-chum.github.io/"
     # The amount of featured apps to show on the home page
     featured_apps_count = 10
     # The amount of updated apps to show in the sidebar

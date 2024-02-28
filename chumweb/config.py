@@ -58,8 +58,8 @@ class Config:
 
 def init_config() -> Config:
     """
-    Loads config values from either command line arguments as `--config-value=x` or environment variables
-    CHUM_CONFIG_VALUE=x
+    Loads config values from either command line arguments as ``--<config-value>=x`` or environment variables
+    ``CHUM_<CONFIG_VALUE>=x``.
     """
     import getopt
     import sys
@@ -96,7 +96,7 @@ def validate_config(c: Config):
     def exit_with_error(err: str):
         sys.exit(err)
     if len(c.repos) == 0 and not c.obs_user:
-        exit_with_error("Either a list of repos must be specified or an obs_user and obs_password must be given")
+        exit_with_error("Either a list of repos must be specified or an obs_user and obs_password must be given.")
 
 
 CONFIG = init_config()

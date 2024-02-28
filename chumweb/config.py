@@ -58,8 +58,8 @@ class Config:
 
 def init_config() -> Config:
     """
-    Loads config values from either command line arguments as `--<config-value>=x` or environment variables
-    `CHUM_<CONFIG_VALUE>=x`.
+    Loads config values from either command line arguments as ``--<config-value>=x`` or environment variables
+    ``CHUM_<CONFIG_VALUE>=x``.
     """
     import getopt
     import sys

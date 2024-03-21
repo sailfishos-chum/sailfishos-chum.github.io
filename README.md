@@ -1,6 +1,6 @@
 # Chum Web Generator
 
-Static website generator to generate a "**Chum Web**" website for [SailfishOS:Chum](https://github.com/sailfishos-chum/), a Sailfish OS community repository.
+Static website generator to generate a "**Chum Web**" website for [SailfishOS:Chum](https://github.com/sailfishos-chum/), a Sailfish&nbsp;OS community repository.
 
 For an overview of how this project is structured, see [ARCHITECTURE.md](ARCHITECTURE.md).
 

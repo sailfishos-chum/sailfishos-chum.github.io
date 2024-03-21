@@ -1,5 +1,5 @@
 """
-This module is responsible for finding package repos, downloading the indexes and parsing metadata.
+This module performs finding package repos, downloading indexes and parsing metadata.
 """
 from dataclasses import dataclass
 from functools import reduce
@@ -34,7 +34,7 @@ class RepoInfo:
 
     def repo_archs(self):
         """
-        :return: The architecture for which there is a repository
+        :return: the CPU architectures for which a repository provides packages.
         """
         return [repo.split("_")[1] for repo in self.repos]
 
@@ -42,8 +42,8 @@ class RepoInfo:
 # OBS API: https://api.opensuse.org/apidocs/index#/Search/get_search_package
 def list_obs_project_repos(obs_url: str, project: str, auth):
     """
-    Lists the available repos on an Open Build Service Instance in a specified project, using the given
-    authentication.
+    List available repos on an Open Build Service (OBS) instance for a specified OBS project,
+    using the provided authentication.
     """
     r = requests.get(urljoin(obs_url, f"build/{project}"), headers=OBS_API_HEADERS, auth=auth)
     doc = minidom.parseString(r.content)
@@ -53,7 +53,7 @@ def list_obs_project_repos(obs_url: str, project: str, auth):
 
 def filter_newest_repos(repos: List[str]):
     """
-    Return the list of repos with the newest version numbers
+    Return the list of repos with the newest version number(s).
 
     Example:
         `get_newest_repos(["4.5.0.24_i486", "4.5.0.24_aarch64", "4.4.0.72_i486", "4.4.0.72_aarch64"])` returns
@@ -62,8 +62,8 @@ def filter_newest_repos(repos: List[str]):
 
     def cmp_repo_version(left: str, right: str) -> str:
         """
-        Compares two repos names `left` and `right`, returns the one with the newest version
-        or `left` if the versions are equal
+        Compare two repository names `left` and `right`, return the one with the newer version number,
+        or return `left` if the versions are equal.
         """
 
         def ver_nos(repo_name: str):
@@ -140,7 +140,7 @@ def load_repo(obs_url: str, obs_project: str, obs_auth: Tuple[str, str], repo_ur
 
 def save_repo_data(repo_url: str, repo_name: str, out_dir: Path):
     """
-    Given a `repo_url`, find and download the `primary.xml.gz` file into `out_dir`
+    For a given a `repo_url`, find and download the `primary.xml.gz` file to `out_dir`.
     """
     makedirs(out_dir, exist_ok=True)
     r = requests.get(urljoin(repo_url, "repodata/repomd.xml"), headers=DEFAULT_HEADERS)
@@ -173,7 +173,7 @@ def save_repo_data(repo_url: str, repo_name: str, out_dir: Path):
 
 def read_repo_data(repo_url, repo_info: Path, repo_name: str) -> List[Package]:
     """
-    Reads all package data from a `primary.xml.gz` file
+    Read all package data from a `primary.xml.gz` file.
     """
     pkgs = []
     with GzipFile(repo_info) as gz:
@@ -186,7 +186,8 @@ def read_repo_data(repo_url, repo_info: Path, repo_name: str) -> List[Package]:
 
 def link_debug_packages(pkgs: List[Package]) -> None:
     """
-    Links "debug" packages to the corresponding package. This method modifies given `pkgs` in-place
+    Link debug packages to their corresponding package.
+    This method modifies given `pkgs` in-place.
     """
 
     list.sort(pkgs, key=lambda p: p.name)
@@ -204,8 +205,8 @@ def link_debug_packages(pkgs: List[Package]) -> None:
 
 def load_remote_descriptions(pkgs: List[Package], step: StepHandle):
     """
-    Loads remote descriptions of the given pkgs and modifies them in place
-    with the description.
+    Load remote descriptions of the given packages and modify them in place
+    with their description.
     """
     from markdown import markdown
     from markupsafe import Markup

@@ -49,11 +49,11 @@ class Config:
     user_agent: str = "chumweb/1.0"
     source_code_url: str = "https://github.com/sailfishos-chum/sailfishos-chum.github.io/"
     # The amount of featured apps to show on the home page
-    featured_apps_count = 10
+    featured_apps_count = 12
     # The amount of updated apps to show in the sidebar
-    updated_apps_count = 6
+    updated_apps_count = 18
     # The amount of updated apps to put in the Atom feed
-    feed_updated_apps_count = 20
+    feed_updated_apps_count = 24
 
 
 def init_config() -> Config:

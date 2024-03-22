@@ -163,7 +163,7 @@ class PackageApplicationCategory(StrEnum):
     motif = "Motif"
     java = "Java"
     consoleonly = "ConsoleOnly"
-    
+
 
 class PackageApplicationType(StrEnum):
     """

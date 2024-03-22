@@ -20,8 +20,10 @@ class PackageApplicationCategory(StrEnum):
     """
     Application categories, see https://specifications.freedesktop.org/menu-spec/latest/apa.html
     for main categories and https://specifications.freedesktop.org/menu-spec/latest/apas02.html
-    for additional categories.
+    for additional categories, plus https://specifications.freedesktop.org/menu-spec/latest/apas03.html
+    if really appropriate.
     """
+    other = "Other"  # SailfishOS:Chum specific, i.e. not part of the Freedesktop.org categories
     audiovideo = "AudioVideo"
     audio = "Audio"
     video = "Video"
@@ -35,7 +37,6 @@ class PackageApplicationCategory(StrEnum):
     settings = "Settings"
     system = "System"
     utility = "Utility"
-    other = "Other"
     building = "Building"
     debugger = "Debugger"
     ide = "IDE"
@@ -163,6 +164,10 @@ class PackageApplicationCategory(StrEnum):
     motif = "Motif"
     java = "Java"
     consoleonly = "ConsoleOnly"
+    screensaver = "Screensaver"
+    trayicon = "TrayIcon"
+    applet = "Applet"
+    shell = "Shell"
 
 
 class PackageApplicationType(StrEnum):

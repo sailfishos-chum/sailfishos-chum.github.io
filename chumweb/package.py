@@ -18,10 +18,8 @@ logger = logging.getLogger(__name__)
 
 class PackageApplicationCategory(StrEnum):
     """
-    Application categories, see https://specifications.freedesktop.org/menu-spec/latest/apa.html
-    for main categories and https://specifications.freedesktop.org/menu-spec/latest/apas02.html
-    for additional categories, plus https://specifications.freedesktop.org/menu-spec/latest/apas03.html
-    if really appropriate.
+    Application categories, for their specification(s) and references see entry "Categories:" in
+    https://github.com/sailfishos-chum/main/blob/main/Metadata.md#table-of-field-descriptions
     """
     other = "Other"  # SailfishOS:Chum specific, i.e. not part of the Freedesktop.org categories specification(s)
     library = "Library"  # SailfishOS:Chum specific, i.e. not part of the Freedesktop.org categories specification(s)

@@ -237,8 +237,8 @@ class Package:
     @staticmethod
     def from_node(dom_element, repo_arch: str):
         """
-        Creates a package class instance from a `<package>` XML node `dom_element` as found in
-        the primary.xml metadata file in RPM repositories.
+        Creates an instance of the class `Package` from a `<package>` XML node's `dom_element` as found in
+        the `primary.xml` metadata file in RPM repositories.
         """
 
         def try_get_str(name) -> str | None:

@@ -1,5 +1,5 @@
 """
-Data classes for package metadata. It is also responsible for parsing the metadate of a single package
+Data classes for package metadata; this also parses metadata of a single package.
 """
 import logging
 from dataclasses import dataclass, field
@@ -18,18 +18,17 @@ logger = logging.getLogger(__name__)
 
 class PackageApplicationCategory(StrEnum):
     """
-    Desktop application categories, from https://specifications.freedesktop.org/menu-spec/latest/apa.html
+    Application categories, see https://specifications.freedesktop.org/menu-spec/latest/apa.html
+    for main categories and https://specifications.freedesktop.org/menu-spec/latest/apas02.html
+    for additional categories.
     """
-    accessibility = "Accessibility"  # Added by Chum?
-    audio_video = "AudioVideo"
+    audiovideo = "AudioVideo"
     audio = "Audio"
     video = "Video"
     development = "Development"
     education = "Education"
     game = "Game"
     graphics = "Graphics"
-    library = "Library"  # Added by Chum?
-    maps = "Maps"  # Added by Chum?
     network = "Network"
     office = "Office"
     science = "Science"
@@ -37,11 +36,138 @@ class PackageApplicationCategory(StrEnum):
     system = "System"
     utility = "Utility"
     other = "Other"
+    building = "Building"
+    debugger = "Debugger"
+    ide = "IDE"
+    guidesigner = "GUIDesigner"
+    profiling = "Profiling"
+    revisioncontrol = "RevisionControl"
+    translation = "Translation"
+    calendar = "Calendar"
+    contactmanagement = "ContactManagement"
+    database = "Database"
+    dictionary = "Dictionary"
+    chart = "Chart"
+    email = "Email"
+    finance = "Finance"
+    flowchart = "FlowChart"
+    pda = "PDA"
+    projectmanagement = "ProjectManagement"
+    presentation = "Presentation"
+    spreadsheet = "Spreadsheet"
+    wordprocessor = "WordProcessor"
+    twodgraphics = "2DGraphics"
+    vectorgraphics = "VectorGraphics"
+    rastergraphics = "RasterGraphics"
+    threedgraphics = "3DGraphics"
+    scanning = "Scanning"
+    ocr = "OCR"
+    photography = "Photography"
+    publishing = "Publishing"
+    viewer = "Viewer"
+    texttools = "TextTools"
+    desktopsettings = "DesktopSettings"
+    hardwaresettings = "HardwareSettings"
+    printing = "Printing"
+    packagemanager = "PackageManager"
+    dialup = "Dialup"
+    instantmessaging = "InstantMessaging"
+    chat = "Chat"
+    ircclient = "IRCClient"
+    feed = "Feed"
+    filetransfer = "FileTransfer"
+    hamradio = "HamRadio"
+    news = "News"
+    p2p = "P2P"
+    remoteaccess = "RemoteAccess"
+    telephony = "Telephony"
+    telephonytools = "TelephonyTools"
+    videoconference = "VideoConference"
+    webbrowser = "WebBrowser"
+    webdevelopment = "WebDevelopment"
+    midi = "Midi"
+    mixer = "Mixer"
+    sequencer = "Sequencer"
+    tuner = "Tuner"
+    tv = "TV"
+    audiovideoediting = "AudioVideoEditing"
+    player = "Player"
+    recorder = "Recorder"
+    discburning = "DiscBurning"
+    actiongame = "ActionGame"
+    adventuregame = "AdventureGame"
+    arcadegame = "ArcadeGame"
+    boardgame = "BoardGame"
+    blocksgame = "BlocksGame"
+    cardgame = "CardGame"
+    kidsgame = "KidsGame"
+    logicgame = "LogicGame"
+    roleplaying = "RolePlaying"
+    shooter = "Shooter"
+    simulation = "Simulation"
+    sportsgame = "SportsGame"
+    strategygame = "StrategyGame"
+    art = "Art"
+    construction = "Construction"
+    music = "Music"
+    languages = "Languages"
+    artificialintelligence = "ArtificialIntelligence"
+    astronomy = "Astronomy"
+    biology = "Biology"
+    chemistry = "Chemistry"
+    computerscience = "ComputerScience"
+    datavisualization = "DataVisualization"
+    economy = "Economy"
+    electricity = "Electricity"
+    geography = "Geography"
+    geology = "Geology"
+    geoscience = "Geoscience"
+    history = "History"
+    humanities = "Humanities"
+    imageprocessing = "ImageProcessing"
+    literature = "Literature"
+    maps = "Maps"
+    math = "Math"
+    numericalanalysis = "NumericalAnalysis"
+    medicalsoftware = "MedicalSoftware"
+    physics = "Physics"
+    robotics = "Robotics"
+    spirituality = "Spirituality"
+    sports = "Sports"
+    parallelcomputing = "ParallelComputing"
+    amusement = "Amusement"
+    archiving = "Archiving"
+    compression = "Compression"
+    electronics = "Electronics"
+    emulator = "Emulator"
+    engineering = "Engineering"
+    filetools = "FileTools"
+    filemanager = "FileManager"
+    terminalemulator = "TerminalEmulator"
+    filesystem = "Filesystem"
+    monitor = "Monitor"
+    security = "Security"
+    accessibility = "Accessibility"
+    calculator = "Calculator"
+    clock = "Clock"
+    texteditor = "TextEditor"
+    documentation = "Documentation"
+    adult = "Adult"
+    core = "Core"
+    kde = "KDE"
+    gnome = "GNOME"
+    xfce = "XFCE"
+    dde = "DDE"
+    gtk = "GTK"
+    qt = "Qt"
+    motif = "Motif"
+    java = "Java"
+    consoleonly = "ConsoleOnly"
 
 
 class PackageApplicationType(StrEnum):
     """
-    Type of the application that the package provides
+    Type of application a package provides
 
     Enums are based on https://www.freedesktop.org/software/appstream/docs/sect-AppStream-YAML.html#field-dep11-type
     """
@@ -75,7 +201,7 @@ class PackageVersion:
 @dataclass
 class Package:
     """
-    Metadata of a RPM package with associated Chum metadata
+    Metadata of an RPM package with associated metadata for SailfishOS:Chum
     """
     name: str
     summary: str | None = None
@@ -111,8 +237,8 @@ class Package:
     @staticmethod
     def from_node(dom_element, repo_arch: str):
         """
-        Creates a Package class instance from a `<package>` XML node `dom_element` as found in the primary.xml
-        metadata in RPM repositories.
+        Create an instance of the class `Package` from a `<package>` XML node's `dom_element` as found in
+        the `primary.xml` metadata file in RPM repositories.
         """
 
         def try_get_str(name) -> str | None:
@@ -159,8 +285,7 @@ class Package:
             import re
             # Based on
             # https://github.com/sailfishos-chum/sailfishos-chum-gui/blob/0b2882fad79673b762ca184cd242d02334f1d8d1/src/chumpackage.cpp#L152C1-L152C108
-            # Metadata, in YAML format, is put as the last paragraph of the application description. Paragraphs are
-            # split by two newlines.
+            # Metadata in YAML format is put as last paragraph of the application description. Paragraphs are split by two newlines.
             paragraphs = [line for line in re.split(r"(?m)^\s*$", description) if line.strip()]
             if not paragraphs:
                 return
@@ -171,12 +296,12 @@ class Package:
                 yaml = yaml_load(yaml_part)
             except (ParserError, ScannerError):
                 yaml = None
-            # If it happens that the description is not YAML, it'll be parsed as a str or generate a ParseError. In that
-            # case, add the source back to the description
+            # If the description is not valid YAML, it will be parsed as a `str` or generate a `ParserError`.
+            # In the latter case, add the source back to the description.
             if type(yaml) in [str, NoneType]:
                 paragraphs.append(yaml_part)
             else:
-                # Note: use Dict.get() to avoid IndexError's. We rather have None values
+                # Note: Use `Dict.get()` to avoid `IndexError`s; we rather have None values.
                 p.title = yaml.get("Title") or yaml.get("PackageName") or name_to_title(name)
                 p.type = yaml.get("Type")
 
@@ -191,7 +316,7 @@ class Package:
                     if type(custom) is list:
                         custom_list = custom
                         custom = {}
-                        # Handle cases where the Custom value is a list of key-value pairs instead of an object :(
+                        # Handle cases where the "Custom" value is a list of key-value pairs instead of an object. :(
                         for list_item in custom_list:
                             custom |= {k: v for (k, v) in list_item.items()}
 
@@ -241,7 +366,7 @@ class Package:
 
     def merge_arch(self, other_pkg: Self):
         """
-        Adds the architecture-specific information from another package to this package
+        Add the architecture-specific information from another package to this package.
         """
         for arch in other_pkg.archs:
             self.repos = self.repos.union(other_pkg.repos)
@@ -254,7 +379,7 @@ class Package:
 
     def is_app(self) -> bool:
         """
-        Heuristic to detect whether this is a graphical app that users would like to install
+        Heuristic to detect whether this is a graphical application which a user is about to install.
         """
         return self.type == PackageApplicationType.desktop_application \
             or self.name.startswith("harbour-") \
@@ -265,7 +390,7 @@ class Package:
 
     def web_url(self):
         """
-        Returns the url for use in the web interface
+        Return URL for use in the web interface.
         """
         if self.is_app():
             return f"apps/{self.name}/"

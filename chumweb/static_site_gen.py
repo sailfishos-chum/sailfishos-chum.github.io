@@ -76,7 +76,7 @@ CATEGORY_PAGES = [
     CategoryPage("Libraries", {PackageApplicationCategory.library}),
     CategoryPage("Location and Navigation", {PackageApplicationCategory.maps}),
     CategoryPage("Multimedia", {PackageApplicationCategory.audio, PackageApplicationCategory.video,
-                                PackageApplicationCategory.audio_video}),
+                                PackageApplicationCategory.audiovideo}),
     CategoryPage("Office", {PackageApplicationCategory.office}),
     CategoryPage("Science", {PackageApplicationCategory.science}),
     CategoryPage("Utilities", {PackageApplicationCategory.system, PackageApplicationCategory.utility}),

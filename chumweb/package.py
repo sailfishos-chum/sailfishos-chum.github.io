@@ -316,7 +316,7 @@ class Package:
                     if type(custom) is list:
                         custom_list = custom
                         custom = {}
-                        # Handle cases where the Custom value is a list of key-value pairs instead of an object. :(
+                        # Handle cases where the "Custom" value is a list of key-value pairs instead of an object. :(
                         for list_item in custom_list:
                             custom |= {k: v for (k, v) in list_item.items()}
 

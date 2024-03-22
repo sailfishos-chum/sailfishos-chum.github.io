@@ -171,9 +171,8 @@ class PackageApplicationCategory(StrEnum):
 
 class PackageApplicationType(StrEnum):
     """
-    Type of application a package provides
-
-    Enums are based on https://www.freedesktop.org/software/appstream/docs/sect-AppStream-YAML.html#field-dep11-type
+    Type of application a package provides, for their specification and references see entry "Type:" in
+    https://github.com/sailfishos-chum/main/blob/main/Metadata.md#table-of-field-descriptions
     """
     generic = enum.auto()
     console_application = "console-application"
@@ -402,8 +401,8 @@ class Package:
             return f"pkgs/{self.name}/"
 
     def get_download_url(self, arch: str) -> Optional[str]:
-        # noarch does not have a dedicated repository, use the first available arch I suppose
-        # This may be an idea in the category "not smart"
+        # `noarch` does not have a dedicated repository, use the first available arch I suppose:
+        # This might be a "not smart" idea.
         if arch == "noarch":
             repo = next(self.repos.__iter__())
         else:

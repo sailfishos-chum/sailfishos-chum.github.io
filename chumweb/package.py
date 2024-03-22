@@ -237,7 +237,7 @@ class Package:
     @staticmethod
     def from_node(dom_element, repo_arch: str):
         """
-        Creates an instance of the class `Package` from a `<package>` XML node's `dom_element` as found in
+        Create an instance of the class `Package` from a `<package>` XML node's `dom_element` as found in
         the `primary.xml` metadata file in RPM repositories.
         """
 
@@ -285,7 +285,7 @@ class Package:
             import re
             # Based on
             # https://github.com/sailfishos-chum/sailfishos-chum-gui/blob/0b2882fad79673b762ca184cd242d02334f1d8d1/src/chumpackage.cpp#L152C1-L152C108
-            # Metadata in YAML format which is put as last paragraph of the application description. Paragraphs are split by two newlines.
+            # Metadata in YAML format is put as last paragraph of the application description. Paragraphs are split by two newlines.
             paragraphs = [line for line in re.split(r"(?m)^\s*$", description) if line.strip()]
             if not paragraphs:
                 return

@@ -24,6 +24,7 @@ class PackageApplicationCategory(StrEnum):
     if really appropriate.
     """
     other = "Other"  # SailfishOS:Chum specific, i.e. not part of the Freedesktop.org categories specification(s)
+    library = "Library"  # SailfishOS:Chum specific, i.e. not part of the Freedesktop.org categories specification(s)
     audiovideo = "AudioVideo"  # Application for presenting, creating, or processing multimedia (audio/video)
     audio = "Audio"  # An audio applicationDesktop entry must include AudioVideo as well
     video = "Video"  # A video applicationDesktop entry must include AudioVideo as well

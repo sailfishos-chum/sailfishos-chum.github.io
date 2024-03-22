@@ -1,5 +1,5 @@
 """
-Data classes for package metadata. It is also responsible for parsing the metadate of a single package
+Data classes for package metadata; this also parses metadata of a single package.
 """
 import logging
 from dataclasses import dataclass, field
@@ -18,18 +18,20 @@ logger = logging.getLogger(__name__)
 
 class PackageApplicationCategory(StrEnum):
     """
-    Desktop application categories, from https://specifications.freedesktop.org/menu-spec/latest/apa.html
+    Application categories, see https://specifications.freedesktop.org/menu-spec/latest/apa.html
+    for main categories and https://specifications.freedesktop.org/menu-spec/latest/apas02.html
+    for additional categories.
     """
-    accessibility = "Accessibility"  # Added by Chum?
-    audio_video = "AudioVideo"
+    accessibility = "Accessibility"
+    audiovideo = "AudioVideo"
     audio = "Audio"
     video = "Video"
     development = "Development"
     education = "Education"
     game = "Game"
     graphics = "Graphics"
-    library = "Library"  # Added by Chum?
-    maps = "Maps"  # Added by Chum?
+    library = "Library"
+    maps = "Maps"
     network = "Network"
     office = "Office"
     science = "Science"
@@ -41,7 +43,7 @@ class PackageApplicationCategory(StrEnum):
 
 class PackageApplicationType(StrEnum):
     """
-    Type of the application that the package provides
+    Type of application a package provides
 
     Enums are based on https://www.freedesktop.org/software/appstream/docs/sect-AppStream-YAML.html#field-dep11-type
     """
@@ -75,7 +77,7 @@ class PackageVersion:
 @dataclass
 class Package:
     """
-    Metadata of a RPM package with associated Chum metadata
+    Metadata of an RPM package with associated metadata for SailfishOS:Chum
     """
     name: str
     summary: str | None = None
@@ -111,8 +113,8 @@ class Package:
     @staticmethod
     def from_node(dom_element, repo_arch: str):
         """
-        Creates a Package class instance from a `<package>` XML node `dom_element` as found in the primary.xml
-        metadata in RPM repositories.
+        Creates a package class instance from a `<package>` XML node `dom_element` as found in
+        the primary.xml metadata file in RPM repositories.
         """
 
         def try_get_str(name) -> str | None:
@@ -159,7 +161,7 @@ class Package:
             import re
             # Based on
             # https://github.com/sailfishos-chum/sailfishos-chum-gui/blob/0b2882fad79673b762ca184cd242d02334f1d8d1/src/chumpackage.cpp#L152C1-L152C108
-            # Metadata, in YAML format, is put as the last paragraph of the application description. Paragraphs are
+            # metadata in YAML format, is put as the last paragraph of the application description. Paragraphs are
             # split by two newlines.
             paragraphs = [line for line in re.split(r"(?m)^\s*$", description) if line.strip()]
             if not paragraphs:
@@ -171,12 +173,12 @@ class Package:
                 yaml = yaml_load(yaml_part)
             except (ParserError, ScannerError):
                 yaml = None
-            # If it happens that the description is not YAML, it'll be parsed as a str or generate a ParseError. In that
-            # case, add the source back to the description
+            # If the description is not valid YAML, it will be parsed as a `str` or generate a `ParserError`.
+            # In the latter case, add the source back to the description.
             if type(yaml) in [str, NoneType]:
                 paragraphs.append(yaml_part)
             else:
-                # Note: use Dict.get() to avoid IndexError's. We rather have None values
+                # Note: Use `Dict.get()` to avoid `IndexError`s; we rather have None values.
                 p.title = yaml.get("Title") or yaml.get("PackageName") or name_to_title(name)
                 p.type = yaml.get("Type")
 
@@ -191,7 +193,7 @@ class Package:
                     if type(custom) is list:
                         custom_list = custom
                         custom = {}
-                        # Handle cases where the Custom value is a list of key-value pairs instead of an object :(
+                        # Handle cases where the Custom value is a list of key-value pairs instead of an object. :(
                         for list_item in custom_list:
                             custom |= {k: v for (k, v) in list_item.items()}
 
@@ -241,7 +243,7 @@ class Package:
 
     def merge_arch(self, other_pkg: Self):
         """
-        Adds the architecture-specific information from another package to this package
+        Add the architecture-specific information from another package to this package.
         """
         for arch in other_pkg.archs:
             self.repos = self.repos.union(other_pkg.repos)
@@ -254,7 +256,7 @@ class Package:
 
     def is_app(self) -> bool:
         """
-        Heuristic to detect whether this is a graphical app that users would like to install
+        Heuristic to detect whether this is a graphical application which a user is about to install.
         """
         return self.type == PackageApplicationType.desktop_application \
             or self.name.startswith("harbour-") \
@@ -265,7 +267,7 @@ class Package:
 
     def web_url(self):
         """
-        Returns the url for use in the web interface
+        Return URL for use in the web interface.
         """
         if self.is_app():
             return f"apps/{self.name}/"

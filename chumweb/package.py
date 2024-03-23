@@ -24,8 +24,8 @@ class PackageApplicationCategory(StrEnum):
     other = "Other"  # SailfishOS:Chum specific, i.e. not part of the Freedesktop.org categories specification(s)
     library = "Library"  # SailfishOS:Chum specific, i.e. not part of the Freedesktop.org categories specification(s)
     audiovideo = "AudioVideo"  # Application for presenting, creating, or processing multimedia (audio/video)
-    audio = "Audio"  # An audio applicationDesktop entry must include AudioVideo as well
-    video = "Video"  # A video applicationDesktop entry must include AudioVideo as well
+    audio = "Audio"  # An audio application.  Desktop entry must include AudioVideo as well.
+    video = "Video"  # A video application.  Desktop entry must include AudioVideo as well.
     development = "Development"  # An application for development
     education = "Education"  # Educational software
     game = "Game"  # A game
@@ -33,7 +33,7 @@ class PackageApplicationCategory(StrEnum):
     network = "Network"  # Network application such as a web browser
     office = "Office"  # An office type application
     science = "Science"  # Scientific software
-    settings = "Settings"  # Settings applicationsEntries may appear in a separate menu or as part of a "Control Center"
+    settings = "Settings"  # Settings applications.  Entries may appear in a separate menu or as part of a "Control Center".
     system = "System"  # System application, "System Tools" such as say a log viewer or network monitor
     utility = "Utility"  # Small utility application, "Accessories"
     building = "Building"  # A tool to build applications.  Must also be categorised as Development.
@@ -108,7 +108,7 @@ class PackageApplicationCategory(StrEnum):
     sportsgame = "SportsGame"  # A sports game.  Must also be categorised as Game.
     strategygame = "StrategyGame"  # A strategy game.  Must also be categorised as Game.
     art = "Art"  # Software to teach arts.  Must also be categorised as Education or Science.
-    construction = "Construction"  #  .  Must also be categorised as Education or Science.
+    construction = "Construction"  # Must also be categorised as Education or Science.
     music = "Music"  # Musical software.  Must also be categorised as AudioVideo or Education.
     languages = "Languages"  # Software to learn foreign languages.  Must also be categorised as Education or Science.
     artificialintelligence = "ArtificialIntelligence"  # Artificial Intelligence software.  Must also be categorised as Education or Science.

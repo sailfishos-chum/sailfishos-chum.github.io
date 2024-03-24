@@ -25,7 +25,7 @@ do
       else k=""
       fi
     fi 
-    l="$(printf %s "$line" | cut -s -f 3)"
+    l="$(printf %s "$line" | cut -s -f 3-)"
     if [ -n "$l" ]
     then
       if [ -n "$(printf %s "$l" | tr -d '[:blank:]')" ]

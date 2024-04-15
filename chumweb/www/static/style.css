@@ -90,6 +90,12 @@ header, header:not(.section-site-info), .section-underline{
     padding-left: 0;
 }
 
+.link-list li a {
+    padding: 0.5em 0;
+    font-weight: bold;
+    display: block;
+}
+
 pre {
     overflow-x: auto;
 }
@@ -350,10 +356,6 @@ body.architecture--i486 .pkg-download-i486 {
 
 /* Either support touch or it is a small device (since the pointer: coarse does not work on the SFOS browser */
 @media (pointer: coarse), (max-device-width: 800px){
-    .link-list li a {
-        padding: 0.5em 0;
-        display: block;
-    }
     .link-list li:not(:last-child) a {
         border-bottom: 1px dotted var(--color-fg);
     }

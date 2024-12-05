@@ -6,11 +6,11 @@ from functools import reduce
 from gzip import GzipFile
 from os import makedirs
 from pathlib import Path
-from typing import List, TypedDict, NotRequired, Unpack, Tuple, Dict
+from typing import List, TypedDict, NotRequired, Unpack, Tuple, Dict, Optional
 from urllib.parse import urljoin
 
 from . import CONFIG
-from .package import Package
+from .package import Package, ChangelogEntry
 
 import requests
 import xml.dom.minidom as minidom
@@ -101,8 +101,9 @@ def load_repo(obs_url: str, obs_project: str, obs_auth: Tuple[str, str], repo_ur
         begin_step("Listing repos")
         repos = filter_newest_repos(list_obs_project_repos(obs_url, obs_project, obs_auth))
 
+    data_paths: List[Dict[str, Path]]
     if "data_path" in kwargs:
-        data_paths = [Path(kwargs["data_path"], f"{repo}.xml.gz") for repo in repos]
+        data_paths = [{'primary': Path(kwargs["data_path"], f"{repo}.xml.gz")} for repo in repos]
     else:
         begin_step("Downloading repos")
         data_paths = [save_repo_data(urljoin(repo_url, repo_name + "/"), repo_name, out_dir) for repo_name in repos]
@@ -123,7 +124,7 @@ def load_repo(obs_url: str, obs_project: str, obs_auth: Tuple[str, str], repo_ur
 
     begin_step("Combining repos")
     for arch, pkg_list in all_pkgs.items():
-        for pkg in pkg_list:
+        for pkg in pkg_list.values():
             if pkg.name in all_pkg_list:
                 all_pkg_list[pkg.name].merge_arch(pkg)
             else:
@@ -142,65 +143,83 @@ def save_repo_data(repo_url: str, repo_name: str, out_dir: Path):
     """
     For a given a `repo_url`, find and download the `primary.xml.gz` file to `out_dir`.
     """
+
+    files_to_download = ["primary", "other"]
+    data_urls = {}
+    data_paths = {}
+
+    def download_file(url: str, destination: Path):
+        """
+        Downloads the file at `url` to the given `destination`
+        """
+        with open(destination, "wb") as gzFile:
+            r = requests.get(url, headers=DEFAULT_HEADERS)
+
+            for chunk in r.iter_content(8096):
+                gzFile.write(chunk)
+
     makedirs(out_dir, exist_ok=True)
     r = requests.get(urljoin(repo_url, "repodata/repomd.xml"), headers=DEFAULT_HEADERS)
     xml = minidom.parseString(r.content)
 
     data_elements = xml.getElementsByTagName("data")
 
-    primary_url: str | None = None
     for dataElement in data_elements:
-        if dataElement.getAttribute("type") == "primary":
+        data_type = dataElement.getAttribute("type")
+        if data_type in files_to_download:
             locations = dataElement.getElementsByTagName("location")
             if len(locations) > 0:
-                primary_url = locations[0].getAttribute("href")
-                break
+                data_urls[data_type] = locations[0].getAttribute("href")
 
-    if not primary_url:
+    if "primary" not in data_urls:
         return
 
-    primary_url = urljoin(repo_url, primary_url)
-    primary_gz_path = out_dir.joinpath(f"{repo_name}.xml.gz")
+    for (data_type, data_url) in data_urls.items():
+        data_url = urljoin(repo_url, data_url)
+        data_path = out_dir.joinpath(f"{repo_name}-{data_type}.xml.gz")
+        download_file(data_url, data_path)
+        data_paths[data_type] = data_path
 
-    with open(primary_gz_path, "wb") as primaryGzFile:
-        r = requests.get(primary_url, headers=DEFAULT_HEADERS)
-
-        for chunk in r.iter_content(8096):
-            primaryGzFile.write(chunk)
-
-    return primary_gz_path
+    return data_paths
 
 
-def read_repo_data(repo_url, repo_info: Path, repo_name: str) -> List[Package]:
+def read_repo_data(repo_url, repo_info: Dict[str, Path], repo_name: str) -> Dict[str, Package]:
     """
     Read all package data from a `primary.xml.gz` file.
     """
-    pkgs = []
-    with GzipFile(repo_info) as gz:
+    pkgs = {}
+    with GzipFile(repo_info["primary"]) as gz:
         xml = minidom.parse(gz)
         for xmlPkg in xml.getElementsByTagName("package"):
-            pkgs.append(Package.from_node(xmlPkg, repo_name))
+            pkg = Package.from_node(xmlPkg, repo_name)
+            pkgs[pkg.name] = pkg
+
+    if "other" in repo_info:
+        with GzipFile(repo_info["other"]) as gz:
+            xml = minidom.parse(gz)
+            for xmlPkg in xml.getElementsByTagName("package"):
+                name = xmlPkg.getAttribute("name")
+                entries = ChangelogEntry.from_node(name, xmlPkg)
+                pkgs[name].changelog_entries = entries
 
     return pkgs
 
 
-def link_debug_packages(pkgs: List[Package]) -> None:
+def link_debug_packages(pkgs: Dict[str, Package]) -> None:
     """
     Link debug packages to their corresponding package.
-    This method modifies given `pkgs` in-place.
     """
 
-    list.sort(pkgs, key=lambda p: p.name)
     last_pkg = None
 
-    for pkg in pkgs:
-        if pkg.name.endswith("-debuginfo"):
-            last_pkg.debuginfo_package = pkg
+    for (name, pkg) in pkgs.items():
+        if name.endswith("-debuginfo"):
+            base_name = name.removesuffix("-debuginfo")
+            pkgs[base_name].debuginfo_package = pkg
             pass
         elif pkg.name.endswith("-debugsource"):
-            last_pkg.debugsource_package = pkg
-        else:
-            last_pkg = pkg
+            base_name = name.removesuffix("-debugsource")
+            pkgs[base_name].debugsource_package = pkg
 
 
 def load_remote_descriptions(pkgs: List[Package], step: StepHandle):

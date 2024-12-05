@@ -81,6 +81,9 @@ def _create_pkg_entry(doc: Document, pkg: Package) -> Element:
     entry.appendChild(entry_link)
 
     entry_content_text = f"Package {pkg.name} was updated to version {pkg.version.to_short_str()}"
+    if len(pkg.changelog_entries) > 0:
+        entry_content_text += ":\n\n" + pkg.changelog_entries[0].text
+
     entry_content = _create_simple_element(doc, "content", entry_content_text, type="text")
     entry.appendChild(entry_content)
 

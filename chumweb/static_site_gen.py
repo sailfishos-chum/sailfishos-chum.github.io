@@ -280,6 +280,7 @@ def gen_site(repo_info: RepoInfo, out_dir: Path):
     env.filters["paragraphise"] = _paragraphise_filter
     env.filters["fallback_icon"] = _fallback_icon_filter
     env.filters["format_datetime"] = _format_datetime
+    env.filters["format_date"] = _format_date
     env.filters["to_public_url"] = _to_absolute_url_filter
 
     step_progress(sitegen_step, "Generating static pages", 2, total_sitegen_steps)
@@ -410,6 +411,10 @@ def _format_datetime(value: datetime, format_str=None):
     if format_str:
         return value.strftime(format_str)
     return value.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _format_date(value: datetime):
+    return _format_datetime(value, format_str="%Y-%m-%d")
 
 
 def _to_absolute_url_filter(path: str) -> str:

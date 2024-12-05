@@ -2,6 +2,7 @@
 Data classes for package metadata; this also parses metadata of a single package.
 """
 import logging
+import re
 from dataclasses import dataclass, field
 import enum
 from datetime import datetime, UTC
@@ -15,6 +16,28 @@ from . import CONFIG
 from .remote_image import RemoteImage
 
 logger = logging.getLogger(__name__)
+
+
+def _try_get_str(dom_element, name) -> str | None:
+    """Return content of XML tag with `name` or None"""
+    try:
+        return dom_element.getElementsByTagName(name)[0].firstChild.nodeValue
+    except (IndexError, AttributeError):
+        return None
+
+
+def _try_get_attribute_tags(dom_element, name, *args: str):
+    """Return a tuple of the given attributes from an XML tag"""
+    result = (())
+    try:
+        el = dom_element.getElementsByTagName(name)[0]
+
+        for attr in args:
+            result += (el.getAttribute(attr),)
+
+        return result
+    except IndexError:
+        return tuple([None for _ in args])
 
 class PackageApplicationCategory(StrEnum):
     """
@@ -183,6 +206,39 @@ class PackageApplicationType(StrEnum):
     firmware = enum.auto()
 
 
+AUTHOR_VERSION_REGEX = re.compile(r"(?P<author>.*) *<(?P<email>.*)>[ -]*(?P<version>.*)")
+@dataclass
+class ChangelogEntry:
+    timestamp: datetime
+    author: str
+    email: str
+    version: str
+    text: str
+
+    @staticmethod
+    def from_node(pkg_name: str, dom_element) -> List:
+        entries: List["ChangelogEntry"] = []
+
+        for entry in dom_element.getElementsByTagName("changelog"):
+            try:
+                text: str = entry.firstChild.nodeValue
+                author_and_version = entry.getAttribute("author")
+                timestamp = datetime.fromtimestamp(int(entry.getAttribute("date")))
+                m = AUTHOR_VERSION_REGEX.fullmatch(author_and_version)
+                if m:
+                    author, email, version = m.group("author", "email", "version")
+                else:
+                    author = author_and_version
+                    email = ""
+                    version = ""
+                entries.append(ChangelogEntry(timestamp, author, email, version, text))
+            except Exception as e:
+                logger.warning(f"Parsing failed for changelog entry from {pkg_name}", exc_info=e)
+
+        # Changelog entries are found from old to new in the XML
+        entries.reverse()
+        return entries
+
 @dataclass
 class PackageVersion:
     epoch: str
@@ -236,6 +292,7 @@ class Package:
     download_url: Dict[str, str] = field(default_factory=dict)
     checksum_type: Dict[str, str] = field(default_factory=dict)
     checksum_value: Dict[str, str] = field(default_factory=dict)
+    changelog_entries: List[ChangelogEntry] = field(default_factory=list)
 
     @staticmethod
     def from_node(dom_element, repo_arch: str):
@@ -246,22 +303,10 @@ class Package:
 
         def try_get_str(name) -> str | None:
             """Return content of XML tag with `name` or None"""
-            try:
-                return dom_element.getElementsByTagName(name)[0].firstChild.nodeValue
-            except (IndexError, AttributeError):
-                return None
+            return _try_get_str(dom_element, name)
 
         def try_get_attribute_tags(name, *args: str):
-            result = (())
-            try:
-                el = dom_element.getElementsByTagName(name)[0]
-
-                for attr in args:
-                    result += (el.getAttribute(attr),)
-
-                return result
-            except IndexError:
-                return tuple([None for _ in args])
+            return _try_get_attribute_tags(dom_element, name, *args)
 
         def try_get_version():
             """Parse version"""

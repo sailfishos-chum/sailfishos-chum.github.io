@@ -192,7 +192,10 @@ def read_repo_data(repo_url, repo_info: Dict[str, Path], repo_name: str) -> Dict
         xml = minidom.parse(gz)
         for xmlPkg in xml.getElementsByTagName("package"):
             pkg = Package.from_node(xmlPkg, repo_name)
-            pkgs[pkg.name] = pkg
+            if pkg.name in pkgs:
+                pkgs[pkg.name].merge_arch(pkg)
+            else:
+                pkgs[pkg.name] = pkg
 
     if "other" in repo_info:
         with GzipFile(repo_info["other"]) as gz:

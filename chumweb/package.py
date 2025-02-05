@@ -446,7 +446,7 @@ class Package:
             return f"pkgs/{self.name}/"
 
     def get_download_url(self, arch: str) -> Optional[str]:
-        # `noarch` and 'src do not have a dedicated repository, use the first available arch I suppose:
+        # `noarch` and `src` packages do not have a dedicated repository, use the first available arch I suppose:
         # This might be a "not smart" idea.
         if arch == "noarch" or arch == "src":
             repo = next(self.repos.__iter__())

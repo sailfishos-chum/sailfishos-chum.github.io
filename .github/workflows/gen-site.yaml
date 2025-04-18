@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Generate website
-        run: python -m chumweb --public-url "https://sailfishos-chum.github.io/" --repos 4.6_aarch64,4.6_i486,4.6_armv7hl --job-summary $GITHUB_STEP_SUMMARY
+        run: python -m chumweb --public-url "https://sailfishos-chum.github.io/" --repos 5.0_aarch64,5.0_i486,5.0_armv7hl --job-summary $GITHUB_STEP_SUMMARY
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload GitHub pages artifact

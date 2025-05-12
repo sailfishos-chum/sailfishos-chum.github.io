@@ -206,7 +206,7 @@ class PackageApplicationType(StrEnum):
     firmware = enum.auto()
 
 
-CHANGELOG_LINE_REGEX = re.compile(r"^[ \t]*-\s*(?:\[(?P<section>[^]]+)])?\s*(?P<log>\w.*)$")
+CHANGELOG_LINE_REGEX = re.compile(r"^[ \t]*-\s*(?:\[(?P<section>[^]]+)])?\s*(?P<log>\S.*)$")
 @dataclass
 class ChangelogEntryLine:
     section: str

@@ -4,11 +4,19 @@
 
 :root {
     --color-bg: #ddd;
-    --color-bg-main: #ccc;
+    --color-bg-main: #eee;
     --color-fg: #000;
     --color-fg-alt: #fff;
     --color-fg-highlight-primary: #088;
     --color-fg-highlight-secondary: #044;
+}
+
+h1 {
+    font-size: 2em;
+}
+
+h2 {
+    font-size: 1.5em;
 }
 
 a {
@@ -54,18 +62,24 @@ main {
 
 .section-site-sidebar {
     grid-area: sidebar;
+    padding-top: 1em;
+}
+
+.section-site-sidebar > :first-child h2 {
+    /* Try to nudge the sidebar header to the same level as the header in the main */
+    line-height: calc(1.5 * 1.2);
 }
 
 .section-site-footer {
-    border-top: 2px dashed var(--color-fg);
+    border-top: 2px dotted var(--color-fg);
     grid-area: site-footer;
 }
 
 main {
     background-color: var(--color-bg-main);
     grid-area: main;
-    border-left: 2px dashed var(--color-fg-highlight-primary);
-    border-right: 2px dashed var(--color-fg-highlight-primary);
+    border-left: 2px solid var(--color-fg-highlight-primary);
+    border-right: 2px solid var(--color-fg-highlight-primary);
 }
 
 header > h1, header > p, header > h2, .pkg-header > h2, .pkg-header p {
@@ -75,7 +89,7 @@ header > h1, header > p, header > h2, .pkg-header > h2, .pkg-header p {
 
 header, header:not(.section-site-info), .section-underline{
     padding: 0.5em 0;
-    border-bottom: 2px dashed var(--color-fg);
+    border-bottom: 2px dotted var(--color-fg);
     margin-bottom: 0.5em;
 }
 
@@ -230,7 +244,7 @@ dl dd {
     text-align: center;
     padding-bottom: 0.5em;
     margin-bottom: 0.5em;
-    border-bottom: 2px dashed var(--color-fg);
+    border-bottom: 2px dotted var(--color-fg);
 }
 
 .pkg-letter-links > * {
@@ -294,7 +308,7 @@ input[type=submit]:active {
 body.architecture--aarch64 .pkg-download-aarch64,
 body.architecture--armv7hl .pkg-download-armv7hl,
 body.architecture--i486 .pkg-download-i486 {
-    font-weight: bold;
+    font-weight: bolder;
 }
 
 /* Small screen view */
@@ -320,8 +334,8 @@ body.architecture--i486 .pkg-download-i486 {
     main {
         padding: 1em;
         border: none;
-        border-top: 2px dashed var(--color-fg-highlight-primary);
-        border-bottom: 2px dashed var(--color-fg-highlight-primary);
+        border-top: 2px solid var(--color-fg-highlight-primary);
+        border-bottom: 2px solid var(--color-fg-highlight-primary);
     }
 
     .section-site-info, .section-site-nav, .section-site-footer {

@@ -445,6 +445,12 @@ class Package:
         else:
             return f"pkgs/{self.name}/"
 
+    def obs_url(self) -> str:
+        """
+        Return the URL on the Open Build Service
+        """
+        return f"{CONFIG.obs_url}/package/show/{CONFIG.obs_project}/{self.name}"
+
     def get_download_url(self, arch: str) -> Optional[str]:
         # `noarch` and `src` packages do not have a dedicated repository, use the first available arch I suppose:
         # This might be a "not smart" idea.

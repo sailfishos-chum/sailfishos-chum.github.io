@@ -134,8 +134,6 @@
     <section>
         <header><h2>Links</h2></header>
         <ul class="link-list">
-            {{ pkg_link(pkg.repo_url, "Source code repo") }}
-            {{ pkg_link(pkg.packaging_repo_url, "Packaging repo") }}
             {% for title, link in pkg.links.items() %}
                 <li><a href="{{link}}">{{ title | title }}</a></li>
             {% else %}
@@ -145,6 +143,19 @@
             {% endfor %}
         </ul>
     </section>
+    {# Debug packages are a tad special and don't have these properties #}
+    {% if not pkg.is_debug() %}
+        <section>
+            <header><h2>Source code links</h2></header>
+            <ul class="link-list">
+                {{ pkg_link(pkg.repo_url, "Source code repo") }}
+                {{ pkg_link(pkg.packaging_repo_url, "Packaging repo") }}
+                {% if not pkg.is_debug() %}
+                    {{ pkg_link(pkg.obs_url(), "Open Build Service") }}
+                {% endif %}
+            </ul>
+        </section>
+    {% endif %}
     {% if pkg.debuginfo_package or pkg.debugsource_package %}
         <section>
             <header><h2>Debug packages</h2></header>

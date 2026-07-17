@@ -12,10 +12,13 @@ from urllib.parse import urljoin
 from . import CONFIG
 from .package import Package, ChangelogEntry
 
+import logging
 import requests
 import xml.dom.minidom as minidom
 
 from .progress import begin_step, step_progress, StepHandle
+
+LOGGER = logging.getLogger(__name__)
 
 DEFAULT_HEADERS = {
     "User-Agent": f"{CONFIG.user_agent} ({CONFIG.public_url}/about-generator.html)"
@@ -218,11 +221,19 @@ def link_debug_packages(pkgs: Dict[str, Package]) -> None:
     for (name, pkg) in pkgs.items():
         if name.endswith("-debuginfo"):
             base_name = name.removesuffix("-debuginfo")
-            pkgs[base_name].debuginfo_package = pkg
-            pass
+            
+            if base_name in pkgs:
+                pkgs[base_name].debuginfo_package = pkg
+            else:
+                LOGGER.info("Could not find base package '%s' for '%s'", base_name, name) 
+
         elif pkg.name.endswith("-debugsource"):
             base_name = name.removesuffix("-debugsource")
-            pkgs[base_name].debugsource_package = pkg
+            
+            if base_name in pkgs:
+                pkgs[base_name].debugsource_package = pkg
+            else:
+                LOGGER.info("Could not find base package '%s' for '%s'", base_name, name) 
 
 
 def load_remote_descriptions(pkgs: List[Package], step: StepHandle):

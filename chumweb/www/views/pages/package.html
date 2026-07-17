@@ -150,9 +150,7 @@
             <ul class="link-list">
                 {{ pkg_link(pkg.repo_url, "Source code repo") }}
                 {{ pkg_link(pkg.packaging_repo_url, "Packaging repo") }}
-                {% if not pkg.is_debug() %}
-                    {{ pkg_link(pkg.obs_url(), "Open Build Service") }}
-                {% endif %}
+                {{ pkg_link(pkg.obs_url(), "Open Build Service") }}
             </ul>
         </section>
     {% endif %}
